@@ -1,52 +1,35 @@
-import * as React from 'react';
-import { Button, View } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
-const Drawer = createDrawerNavigator();
-
-const App=()=>{
+const App = () => {
   return (
-    <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Info" component={InfoScreen} />
-        <Drawer.Screen name="Image" component={ImageScreen} />
-      </Drawer.Navigator>
-    </NavigationContainer>
+        <View style={styles.container}>
+          <Text>Cleaned up app</Text>
+          <Test/>
+          {PushMsg()}
+        </View>
   );
+};
+
+const Test=()=>{
+  return <Text>Placeholder for</Text>;
 }
 
-function HomeScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button onPress={() => navigation.goBack()} title="Back" />
-      <Button onPress={() => navigation.navigate('Info')} title="Info screen" />
-      <Button onPress={() => navigation.navigate('Image')} title="Image screen" />
-      <Button onPress={() => navigation.toggleDrawer()} title="Open/Close" />
-    </View>
-  );
+const PushMsg=()=>{
+  return <Text>testing pushing</Text>;
 }
 
-function InfoScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button onPress={() => navigation.goBack()} title="Back" />
-      <Button onPress={() => navigation.navigate('Home')} title="Home screen" />
-      <Button onPress={() => navigation.navigate('Image')} title="Image screen" />
-      <Button onPress={() => navigation.toggleDrawer()} title="Open/Close" />
-    </View>
-  );
-}
-function ImageScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button onPress={() => navigation.goBack()} title="Back" />
-      <Button onPress={() => navigation.navigate('Home')} title="Home screen" />
-      <Button onPress={() => navigation.navigate('Info')} title="Info screen" />
-      <Button onPress={() => navigation.toggleDrawer()} title="Open/Close" />
-    </View>
-  );
-}
+const styles = StyleSheet.create({
+  container:{
+    flex:1,
+    alignItems: 'center',
+    justifyContent: 'center', 
+    backgroundColor: '#ddd'
+  }
+});
 
 export default App;
