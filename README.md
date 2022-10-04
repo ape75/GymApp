@@ -9,3 +9,4 @@ In order to run this app you need to make the following installations:
 5. npm install react-native-reanimated
 
 Oskari-branchin lisäämä
+Uudestaan!
