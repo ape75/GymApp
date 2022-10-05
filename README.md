@@ -7,5 +7,7 @@ In order to run this app you need to make the following installations:
 3. npm install @react-navigation/drawer
 4. npm install react-native-gesture-handler@2.1.1
 5. npm install react-native-reanimated
+6. npm install react-native-sqlite-storage
+7. npm install react-native-modern-datepicker
 
 Moro!!!
