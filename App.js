@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, TextInput, Button, ScrollView, View, Text } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {init, fetchAllExDone} from './database/db';
 import {CalendarScreen} from './components/screens/calendar';
@@ -30,12 +30,42 @@ const App=()=>{
   }
   finally{
   }
-}
+  }
+
+  //this function returns a custom Drawer
+  const CustomDrawer = props => {
+    return (
+      <View style={{ flex: 1 }}>
+        <DrawerContentScrollView {...props}>
+          {/* this is the first item in the custom Drawer */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding :5,
+              backgroundColor: '#f0f0f5',
+              marginBottom: 10,
+            }}>           
+            <Image
+              source={require('./assets/images/Gymapp_logo.png')}
+              style={{ width: 120, height: 120, borderRadius: 60,}}
+            />
+          </View>
+          {/* DrawerItemList adds rest of the items (Drawer.Screens) from the props as Drawer content. Screens are defined in Drawer.Navigator -component */}
+          <DrawerItemList {...props} /> 
+        </DrawerContentScrollView>        
+      </View>
+    );
+  };
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomeScreen} />
+      <Drawer.Navigator 
+        initialRouteName="Home"
+        drawerContent={props => <CustomDrawer {...props} />} //here a custom Drawer is defined as Drawer content and all the properties are passed as arguments
+      >
+        <Drawer.Screen name="Home" component={HomeScreen}/>
         <Drawer.Screen name="Calendar" component={CalendarScreen} />
         <Drawer.Screen name="Lisää harjoitus" component={UusiHarjoitus} />
       </Drawer.Navigator>
