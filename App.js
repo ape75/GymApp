@@ -66,8 +66,6 @@ const App=()=>{
         drawerContent={props => <CustomDrawer {...props} />} //here a custom Drawer is defined as Drawer content and all the properties are passed as arguments
       >
         <Drawer.Screen name="Home" component={HomeScreen}/>
-        <Drawer.Screen name="Info" component={InfoScreen} />
-        <Drawer.Screen name="Image" component={ImageScreen} />
         <Drawer.Screen name="Calendar" component={CalendarScreen} />
         <Drawer.Screen name="Lisää harjoitus" component={UusiHarjoitus} />
       </Drawer.Navigator>
