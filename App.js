@@ -16,6 +16,8 @@ init()
 
 const App=()=>{
 
+  
+
   useEffect(()=>{
     readAllExDone();   
   }, [])
@@ -72,27 +74,57 @@ const App=()=>{
     </NavigationContainer>
   );
 }
+//tämän koko homman voisi siirtää omaan tiedostoonsa
+function HomeScreen({ navigation }) {
+  const [workoutList, setWorkoutList]= useState([{workoutForm:""}]);
 
-function HomeScreen({ navigation }) { //tässä textinput harjoituksesta alasvetovalikko plus tarvitsevat value={} 
+  const [workout, setWorkout]=useState('');
+  const [reps, setReps]=useState('');
+  const [sets, setSets]=useState('');
+
+
+  const handleWorkoutAdd = () =>{
+    setWorkoutList([...workoutList, {workoutForm:""}])
+  }
+  //jostain syystä tämä poistaa aina listan viimeisen formin (todo) korjaa
+  const handleWorkoutRemove = (index) => {
+    setWorkoutList(workoutList=>workoutList.filter((workoutForm, id)=>id!=index));
+  }
+
+  const workoutInputHandler = (val) => {
+    setWorkout(val);
+  };
+
+  const repsInputHandler = (val) => {
+    setReps(val);
+  };
+
+  const setsInputHandler = (val) => {
+    setSets(val);
+  };
+
   return (
     <View style={styles.container}>
       <Button onPress={() => navigation.navigate('Lisää harjoitus')} title="Uusi Harjoitus" />
       <Button onPress={() => navigation.navigate('Calendar')} title="Calendar screen" />
+      <Button onPress={handleWorkoutAdd} title="Tämän päivän harjoitus"/>
       <ScrollView contentContainerStyle={styles.scrollviewwidthstyle} style={styles.scrollviewstyle}>
-        <View style={styles.todaysworkout}>
+        {workoutList.map((workoutForm,index) => (
+          <View key={index} style={styles.todaysworkout}>
           <Text>Tämän päivän treeni</Text>
-          <TextInput style={styles.textinput}  placeholder="Harjoitus" />
-          <TextInput style={styles.textinput}  placeholder="Toistot" />
-          <TextInput style={styles.textinput}  placeholder="Setit" />
+          <TextInput style={styles.textinput} value={workoutForm.workout} onChange={workoutInputHandler} placeholder="Harjoitus" />
+          <TextInput style={styles.textinput} value={workoutForm.reps} onChange={repsInputHandler} placeholder="Toistot" />
+          <TextInput style={styles.textinput} value={workoutForm.sets} onChange={setsInputHandler} placeholder="Setit" />
             <View style={styles.inputstyle}>
               <View style={styles.buttonstyle}>
-                <Button title="Cancel" />
+                <Button title="Cancel" onPress={()=> handleWorkoutRemove(index)}/>
               </View>
               <View style={styles.buttonstyle}>
                 <Button title="Lisää" />
               </View>
             </View>
           </View>
+        ))}
       </ScrollView>
     </View>
   );
