@@ -65,10 +65,17 @@ const App=()=>{
     <NavigationContainer>
       <Drawer.Navigator 
         initialRouteName="Home"
+        screenOptions={{
+          headerStyle:{
+            backgroundColor:'#e6f2ff',
+            elevation: 10,
+            shadowColor: 'black',
+          }
+        }}         
         drawerContent={props => <CustomDrawer {...props} />} //here a custom Drawer is defined as Drawer content and all the properties are passed as arguments
       >
         <Drawer.Screen name="Home" component={HomeScreen}/>
-        <Drawer.Screen name="Calendar" component={CalendarScreen} />
+        <Drawer.Screen name="Kalenteri" component={CalendarScreen} />
         <Drawer.Screen name="Lisää harjoitus" component={UusiHarjoitus} />
       </Drawer.Navigator>
     </NavigationContainer>
@@ -106,7 +113,7 @@ function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Button onPress={() => navigation.navigate('Lisää harjoitus')} title="Uusi Harjoitus" />
-      <Button onPress={() => navigation.navigate('Calendar')} title="Calendar screen" />
+      <Button onPress={() => navigation.navigate('Kalenteri')} title="Kalenteri" />
       <Button onPress={handleWorkoutAdd} title="Tämän päivän harjoitus"/>
       <ScrollView contentContainerStyle={styles.scrollviewwidthstyle} style={styles.scrollviewstyle}>
         {workoutList.map((workoutForm,index) => (
