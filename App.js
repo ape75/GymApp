@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, TextInput, Button, ScrollView, View, Text } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {init, fetchAllExDone} from './database/db';
 import {CalendarScreen} from './components/screens/calendar';
@@ -16,6 +16,8 @@ init()
 
 const App=()=>{
 
+  
+
   useEffect(()=>{
     readAllExDone();   
   }, [])
@@ -30,39 +32,106 @@ const App=()=>{
   }
   finally{
   }
-}
+  }
+
+  //this function returns a custom Drawer
+  const CustomDrawer = props => {
+    return (
+      <View style={{ flex: 1 }}>
+        <DrawerContentScrollView {...props}>
+          {/* this is the first item in the custom Drawer */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding :5,
+              backgroundColor: '#f0f0f5',
+              marginBottom: 10,
+            }}>           
+            <Image
+              source={require('./assets/images/Gymapp_logo.png')}
+              style={{ width: 120, height: 120, borderRadius: 60,}}
+            />
+          </View>
+          {/* DrawerItemList adds rest of the items (Drawer.Screens) from the props as Drawer content. Screens are defined in Drawer.Navigator -component */}
+          <DrawerItemList {...props} /> 
+        </DrawerContentScrollView>        
+      </View>
+    );
+  };
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Calendar" component={CalendarScreen} />
+      <Drawer.Navigator 
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle:{
+            backgroundColor:'#e6f2ff',
+            elevation: 10,
+            shadowColor: 'black',
+          }
+        }}         
+        drawerContent={props => <CustomDrawer {...props} />} //here a custom Drawer is defined as Drawer content and all the properties are passed as arguments
+      >
+        <Drawer.Screen name="Home" component={HomeScreen}/>
+        <Drawer.Screen name="Kalenteri" component={CalendarScreen} />
         <Drawer.Screen name="Lisää harjoitus" component={UusiHarjoitus} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
 }
+//tämän koko homman voisi siirtää omaan tiedostoonsa
+function HomeScreen({ navigation }) {
+  const [workoutList, setWorkoutList]= useState([{workoutForm:""}]);
 
-function HomeScreen({ navigation }) { //tässä textinput harjoituksesta alasvetovalikko plus tarvitsevat value={} 
+  const [workout, setWorkout]=useState('');
+  const [reps, setReps]=useState('');
+  const [sets, setSets]=useState('');
+
+
+  const handleWorkoutAdd = () =>{
+    setWorkoutList([...workoutList, {workoutForm:""}])
+  }
+  //jostain syystä tämä poistaa aina listan viimeisen formin (todo) korjaa
+  const handleWorkoutRemove = (index) => {
+    setWorkoutList(workoutList=>workoutList.filter((workoutForm, id)=>id!=index));
+  }
+
+  const workoutInputHandler = (val) => {
+    setWorkout(val);
+  };
+
+  const repsInputHandler = (val) => {
+    setReps(val);
+  };
+
+  const setsInputHandler = (val) => {
+    setSets(val);
+  };
+
   return (
     <View style={styles.container}>
       <Button onPress={() => navigation.navigate('Lisää harjoitus')} title="Uusi Harjoitus" />
-      <Button onPress={() => navigation.navigate('Calendar')} title="Calendar screen" />
+      <Button onPress={() => navigation.navigate('Kalenteri')} title="Kalenteri" />
+      <Button onPress={handleWorkoutAdd} title="Tämän päivän harjoitus"/>
       <ScrollView contentContainerStyle={styles.scrollviewwidthstyle} style={styles.scrollviewstyle}>
-        <View style={styles.todaysworkout}>
+        {workoutList.map((workoutForm,index) => (
+          <View key={index} style={styles.todaysworkout}>
           <Text>Tämän päivän treeni</Text>
-          <TextInput style={styles.textinput}  placeholder="Harjoitus" />
-          <TextInput style={styles.textinput}  placeholder="Toistot" />
-          <TextInput style={styles.textinput}  placeholder="Setit" />
+          <TextInput style={styles.textinput} value={workoutForm.workout} onChange={workoutInputHandler} placeholder="Harjoitus" />
+          <TextInput style={styles.textinput} value={workoutForm.reps} onChange={repsInputHandler} placeholder="Toistot" />
+          <TextInput style={styles.textinput} value={workoutForm.sets} onChange={setsInputHandler} placeholder="Setit" />
             <View style={styles.inputstyle}>
               <View style={styles.buttonstyle}>
-                <Button title="Cancel" />
+                <Button title="Cancel" onPress={()=> handleWorkoutRemove(index)}/>
               </View>
               <View style={styles.buttonstyle}>
                 <Button title="Lisää" />
               </View>
             </View>
           </View>
+        ))}
       </ScrollView>
     </View>
   );
