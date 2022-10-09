@@ -3,7 +3,9 @@ import { openDatabase } from 'react-native-sqlite-storage';
 var db = openDatabase({ name: 'gymapp.db' }); //Open database - create if the database does not exist
 var tableName="extypes";
 var tableName2="exdone";
-//method returns a Promise - in the calling side .then(...).then(...)....catch(...) can be used
+
+//function returns a Promise - in the calling side .then(...).then(...)....catch(...) can be used
+//this function intializes the database into SQLite
 export const init=()=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
@@ -45,7 +47,6 @@ export const init=()=>{
                 14, 'Penkkipunnerrus levytangolla', 'Rinta, ojentajat, etuolkapäät',
                 15, 'Kulmasoutu', 'Leveä selkälihas, epäkäs, hauis',
             ]);
-
             
             tx.executeSql('create table if not exists '+tableName2+
             '(id integer not null primary key, date text not null, reps integer not null, sets integer not null, typeid integer not null, FOREIGN KEY(typeid) REFERENCES extypes(id));',
@@ -84,6 +85,7 @@ export const init=()=>{
     return promise;
 };
 
+//function reads all the information about all done exercises from both tables
 export const fetchAllExDone=()=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
@@ -107,6 +109,7 @@ export const fetchAllExDone=()=>{
     return promise;
 };
 
+//function reads all the exercises done on a specific date
 export const fetchExByDay=(day)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
@@ -125,6 +128,28 @@ export const fetchExByDay=(day)=>{
                     console.log(err);
                     reject(err);
                 }
+            );
+        });
+    });
+    return promise;
+};
+
+//function updates reps and sets of an exercise with the specific id 
+export const updateExById=(id, reps, sets)=>{    
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            //Here we use the Prepared statement, just putting placeholders to the values to be inserted
+            tx.executeSql('update '+tableName2+' set reps=?, sets=? where id=?;',
+            //And the values come here
+            [reps, sets, id],
+            //If the transaction succeeds, this is called
+            ()=>{
+                    resolve();
+            },
+            //If the transaction fails, this is called
+            (_,err)=>{
+                reject(err);
+            }
             );
         });
     });
