@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, ImageBackground } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
-import {fetchExByDay} from '../../database/db';
+import {fetchExByDay, updateExById} from '../../database/db';
+import ExModal from '../ExModal';
 
 
 export const CalendarScreen=(props)=>{
@@ -9,16 +10,21 @@ export const CalendarScreen=(props)=>{
     const [selectedDate, setSelectedDate] = useState('');
     const [textDate, setTextdDate] = useState('');
     const [renderList, setRenderList] = useState(false);
+    const [visibility, setVisibility]=useState(false);
     const [exList, setExList]=useState([]);
+    const [exToUpdate, setExToUpdate]=useState();
+    const [updateId, setUpdateId]=useState(-1);
   
+    //function returns a item to be rendered into Flatlist in the RenderList -component
     const renderItem=({item, index})=>{
         return (
-            <TouchableOpacity>          
+            <TouchableOpacity onPress={()=>updateEx(index)} >          
                 <Text style={styles.listItemStyle} key={index}>{index+1}. {item.name} / toistot {item.reps} / setit {item.sets}</Text>
             </TouchableOpacity>
         );
       }   
       
+      //function that implements an Alert -window 
       const alertEmpty = ()=>{
         Alert.alert(
           ""+selectedDate,//title - put at least this - the rest is up to you
@@ -33,29 +39,66 @@ export const CalendarScreen=(props)=>{
           );
       }
 
+    //component which is rendered if the renderList is set to "true"
     const RenderList=()=>{
-    if(renderList){
-        return(
-            <View style={styles.listStyle}>
-                <Text style={styles.listHeading}>{textDate}</Text>
-                <FlatList
-                    data={exList}
-                    renderItem={renderItem}       
-                /> 
-            </View>
-        );
-    }             
-    }    
+        if(renderList){
+            return(
+                <View style={styles.listStyle}>
+                    <Text style={styles.listHeading}>{textDate}</Text>
+                    <FlatList
+                        data={exList}
+                        renderItem={renderItem}       
+                    /> 
+                </View>
+            );            
+        } 
+        else{
+            return(
+                <View></View>
+            );
+        }            
+    } 
+    
+    //function which sets the Modal visibility attribute to "true" and the modal view is opened
+    const openModal=()=>{
+        setVisibility(true);
+    }
+
+     //function which sets the Modal visibility attribute to "false" and the modal view is closed
+    const closeModal=()=>{
+        setVisibility(false);
+    }
+    
+    //function which gets it parameters from the modal view and calls updaExById -function if there is something to update
+    const updateExToDb=async(id, reps, sets, date)=>{
+        if(updateId!=-1){       
+          await updateExById(id, reps, sets);
+          setUpdateId(-1);
+        }
+        else{
+            console.log("Nothing to update.");
+        }    
+        setVisibility(false); 
+        await readAllExDone(date);
+      }
+      
+      //function gets the index of the specific item as a parameter from the onPress-attribute of TouchableOpacity in renderItem -function
+      //then it sets the desired index- and item -values to state Variables and opens the Modal View
+      const updateEx=(index)=>{
+        setUpdateId(index);
+        setExToUpdate(exList[index]);
+        openModal();
+      }    
       
       //a custom button component made by using a TouchableOpacity-component
     const AppButton = ({ onPress, title, backgroundColor, fontColor }) => (
         <TouchableOpacity 
-        activeOpacity={0.6}
-        onPress={onPress} 
-        style={[
-            styles.appButtonContainer,        
-            backgroundColor && { backgroundColor }        
-        ]}>
+            activeOpacity={0.6}
+            onPress={onPress} 
+            style={[
+                styles.appButtonContainer,        
+                backgroundColor && { backgroundColor }        
+            ]}>
         <Text style={[styles.appButtonText, { color:fontColor }]}>
             {title}
         </Text>
@@ -65,7 +108,13 @@ export const CalendarScreen=(props)=>{
     return (
       <View style={styles.containerStyle}> 
         <ImageBackground source={require('../../assets/images/background.jpg')}
-            style={styles.imageBackground} resizeMode='cover'>       
+            style={styles.imageBackground} resizeMode='cover'>
+            <ExModal 
+                visibility={visibility} 
+                updateEx={updateExToDb} 
+                exToUpdate={exToUpdate} 
+                closeModal={closeModal}
+            />               
             <DatePicker
                 options={{
                     backgroundColor: '#f0f0f5',
@@ -93,10 +142,12 @@ export const CalendarScreen=(props)=>{
     </View>      
     );
 
+    //this function calls the fetchExByDay -function from db.js and sets the return value to the ExList -state variable
+    //it also sets the RenderList state variable to "true", so the list is rendered to the screen
+    //if the list is empty it calls the alertEmpty -function => RenderList is set to "false" and the list is not rendered
     async function readAllExDone(date){
         try{
         const dbResult = await fetchExByDay(date);
-        console.log(dbResult);
         if(dbResult.length===0){
             alertEmpty();
             setRenderList(false);
