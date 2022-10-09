@@ -4,6 +4,7 @@ import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image } from 'rea
 import { NavigationContainer } from '@react-navigation/native';
 import {init, fetchAllExDone} from './database/db';
 import {CalendarScreen} from './components/screens/calendar';
+import { NewExercise } from './components/screens/newExercise';
 
 const Drawer = createDrawerNavigator();
 
@@ -76,7 +77,7 @@ const App=()=>{
       >
         <Drawer.Screen name="Home" component={HomeScreen}/>
         <Drawer.Screen name="Kalenteri" component={CalendarScreen} />
-        <Drawer.Screen name="Lisää harjoitus" component={UusiHarjoitus} />
+        <Drawer.Screen name="Lisää harjoitus" component={NewExercise} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
