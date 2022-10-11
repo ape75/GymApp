@@ -1,15 +1,29 @@
 import { useState } from 'react';
 import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground } from 'react-native';
-
+import {fetchExByDay, updateExById, addNewEx} from '../../database/db';
 
 export const NewExercise=()=>{
 
-    const [workout, setWorkout]= useState();
+    const [newEx, setNewEx]= useState();
+    const [newExGroup, setNewExGroup]= useState();
 
-    const workoutInputHandler=(enteredText)=>{
-        setWorkout(enteredText);
+    const newExHandler=(enteredText)=>{
+        setNewEx(enteredText);
+        console.log(newEx);
+      }
+
+    const newExGroupHandler=(enteredText)=>{
+        setNewExGroup(enteredText);
+        console.log(newExGroup);
+      }
+
+    const workoutInputHandler=({newEx, newExGroup})=>{
+        console.log(newEx);
+        console.log(newExGroup);
+        addNewEx(newEx, newExGroup);
     }
-    
+
+
     return (
         
 
@@ -23,8 +37,10 @@ export const NewExercise=()=>{
                 <Text>Lisää uusi harjoitus</Text>   
             </View>
             <TextInput style={styles.inputStyle} placeholder="Anna harjoituksen nimi..." 
-                onChangeText={workoutInputHandler}/>
-            <Button style={styles.buttonStyle} color='#a4161a' title='Add!' 
+                onChangeText={newExHandler}/>
+                  <TextInput style={styles.inputStyle} placeholder="Anna lihasryhmä..." 
+                onChangeText={newExGroupHandler}/>
+            <Button style={styles.buttonStyle} color='#a4161a' title='Lisää!' onPress={()=>addNewEx(newEx, newExGroup)} 
                />
             
         </View>
