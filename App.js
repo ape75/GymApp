@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image } from 'react-native';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {init, fetchAllExDone} from './database/db';
 import {CalendarScreen} from './components/screens/calendar';
 import { NewExercise } from './components/screens/newExercise';
+import Icon from 'react-native-vector-icons/Ionicons'
 
 const Drawer = createDrawerNavigator();
 
@@ -15,9 +16,7 @@ init()
   console.log('Database IS NOT initialized! '+err);
 });
 
-const App=()=>{
-
-  
+const App=()=>{  
 
   useEffect(()=>{
     readAllExDone();   
@@ -54,9 +53,9 @@ const App=()=>{
               source={require('./assets/images/Gymapp_logo.png')}
               style={{ width: 120, height: 120, borderRadius: 60,}}
             />
-          </View>
+          </View>         
           {/* DrawerItemList adds rest of the items (Drawer.Screens) from the props as Drawer content. Screens are defined in Drawer.Navigator -component */}
-          <DrawerItemList {...props} /> 
+        <DrawerItemList {...props} />        
         </DrawerContentScrollView>        
       </View>
     );
@@ -72,12 +71,51 @@ const App=()=>{
             elevation: 10,
             shadowColor: 'black',
           }
-        }}         
+        }}        
         drawerContent={props => <CustomDrawer {...props} />} //here a custom Drawer is defined as Drawer content and all the properties are passed as arguments
       >
-        <Drawer.Screen name="Home" component={HomeScreen}/>
-        <Drawer.Screen name="Kalenteri" component={CalendarScreen} />
-        <Drawer.Screen name="Lisää harjoitus" component={NewExercise} />
+        <Drawer.Screen 
+          name="Home" 
+          component={HomeScreen}
+          options={{            
+            title: "Home",
+            drawerIcon: ({focused, size}) => (
+              <Icon
+                 name="md-home"
+                 size={size}
+                 color={focused ? 'black' : '#b3b3b3'}
+              />
+            ),
+          }}          
+        />
+        <Drawer.Screen 
+          name="Kalenteri" 
+          component={CalendarScreen}
+          options={{            
+            title: "Kalenteri",
+            drawerIcon: ({focused, size}) => (
+              <Icon
+                 name="md-calendar"
+                 size={size}
+                 color={focused ? 'black' : '#b3b3b3'}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen 
+          name="Lisää harjoitus" 
+          component={NewExercise}
+          options={{            
+            title: "Lisää harjoitus",
+            drawerIcon: ({focused, size}) => (
+              <Icon
+                 name="md-add-circle"
+                 size={size}
+                 color={focused ? 'black' : '#b3b3b3'}
+              />
+            ),
+          }} 
+        />
       </Drawer.Navigator>
     </NavigationContainer>
   );
@@ -96,7 +134,7 @@ function HomeScreen({ navigation }) {
   }
   //jostain syystä tämä poistaa aina listan viimeisen formin (todo) korjaa
   const handleWorkoutRemove = (index) => {
-    setWorkoutList(workoutList=>workoutList.filter((workoutForm, id)=>id!=index));
+    setWorkoutList(workoutList=>workoutList.filter((workoutForm, id)=>id!=index));    
   }
 
   const workoutInputHandler = (val) => {
@@ -109,7 +147,7 @@ function HomeScreen({ navigation }) {
 
   const setsInputHandler = (val) => {
     setSets(val);
-  };
+  };  
 
   return (
     <View style={styles.container}>
@@ -125,7 +163,7 @@ function HomeScreen({ navigation }) {
           <TextInput style={styles.textinput} value={workoutForm.sets} onChange={setsInputHandler} placeholder="Setit" />
             <View style={styles.inputstyle}>
               <View style={styles.buttonstyle}>
-                <Button title="Cancel" onPress={()=> handleWorkoutRemove(index)}/>
+                <Button title={"Cancel"+index} onPress={()=> handleWorkoutRemove(index)}/>
               </View>
               <View style={styles.buttonstyle}>
                 <Button title="Lisää" />

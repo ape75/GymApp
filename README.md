@@ -11,5 +11,7 @@ In order to run this app you need to make the following installations:
 7. npm install react-native-modern-datepicker
 8. npm install react-native-paper@5.0.0-rc.6
 9. npm install --save react-native-vector-icons
+10. npm install react-native-ionicons@^4.x
+11. npm install react-native-linear-gradient --save
 
 Moro!!!

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, ImageBackground } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
-import {fetchExByDay, updateExById} from '../../database/db';
+import {fetchExByDay, updateExById, deleteEx} from '../../database/db';
 import ExModal from '../ExModal';
 
 
@@ -18,7 +18,8 @@ export const CalendarScreen=(props)=>{
     //function returns a item to be rendered into Flatlist in the RenderList -component
     const renderItem=({item, index})=>{
         return (
-            <TouchableOpacity onPress={()=>updateEx(index)} >          
+            <TouchableOpacity 
+                onPress={()=>updateEx(index)} onLongPress={()=>confirmation(item.name, item.id, index)} >          
                 <Text style={styles.listItemStyle} key={index}>{index+1}. {item.name} / toistot {item.reps} / setit {item.sets}</Text>
             </TouchableOpacity>
         );
@@ -58,6 +59,21 @@ export const CalendarScreen=(props)=>{
             );
         }            
     } 
+
+    const confirmation = (name, id, index)=>{
+        Alert.alert(
+          "Harjoitus nro " +(index+1) +" (" +name+ ")" +" poistetaan!",//title - put at least this - the rest is up to you
+          'Oletko varma?',//Extra message
+          //There can be several buttons
+          //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
+          [{text:'Kyllä', style:'destructive', onPress:()=>deleteExFromDb(id)},
+          //The second button
+          {text:'Peruuta', style:'default',}],
+          {
+            cancelable: true
+          }
+          );
+      }
     
     //function which sets the Modal visibility attribute to "true" and the modal view is opened
     const openModal=()=>{
@@ -88,7 +104,7 @@ export const CalendarScreen=(props)=>{
         setUpdateId(index);
         setExToUpdate(exList[index]);
         openModal();
-      }    
+      }
       
       //a custom button component made by using a TouchableOpacity-component
     const AppButton = ({ onPress, title, backgroundColor, fontColor }) => (
@@ -188,8 +204,23 @@ export const CalendarScreen=(props)=>{
         }
         finally{
         }
-    }   
+    }
+    
+    //this function calls deleteEx -function from db.js which deletes the item with the specific id from the database
+    async function deleteExFromDb(id){   
+        try{
+          await deleteEx(id);
+        }
+        catch(err){
+          console.log(err);
+        }
+        finally{     
+        }
+        await readAllExDone(textDate);
+      }
 };
+
+
 
   const styles = StyleSheet.create({
     containerStyle:{       
