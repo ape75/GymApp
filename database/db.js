@@ -205,4 +205,22 @@ export const fetchAllExById=(id)=>{
     return promise;
 };
 
-
+/*this function is used to get exercise types to homescreen workout form 
+so that user can choose which exercise he wants to do today*/
+export const fetchExerciseTypes=()=>{
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{            
+            tx.executeSql('select * from'+tableName, [],
+                (tx, result)=>{
+                    resolve(result.rows.raw());
+                },
+                (tx,err)=>{
+                    console.log("Err");
+                    console.log(err);
+                    reject(err);
+                }
+            );
+        });
+    });
+    return promise;
+};

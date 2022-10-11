@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image} from 'react-native';
+import {fetchExerciseTypes} from '../../database/db';
 
 export const HomeScreen=(props)=>{
 
