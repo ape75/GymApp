@@ -1,6 +1,8 @@
 import React, { useEffect,useState } from 'react';
-import {StyleSheet, Text, View, Modal, ImageBackground, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Modal, ImageBackground, TouchableOpacity, Alert, FlatList} from 'react-native';
 import { TextInput, Avatar, Surface} from 'react-native-paper';  
+import {fetchAllExById} from '../database/db';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 const ExModal = (props) => {
@@ -8,14 +10,16 @@ const ExModal = (props) => {
     const [exId, setExId]=useState();
     const [exDate, setExDate]=useState();
     const [exReps, setExReps]=useState();
-    const [exSets, setExSets]=useState();    
-
+    const [exSets, setExSets]=useState();
+    const [exList, setExList]=useState([]);    
+ 
     useEffect(()=>{
         setExId(props.exToUpdate==undefined ? "" : props.exToUpdate.id);
         setExDate(props.exToUpdate==undefined ? "" : props.exToUpdate.date);
         setExName(props.exToUpdate==undefined ? "" : props.exToUpdate.name);
         setExReps(props.exToUpdate==undefined ? "" : props.exToUpdate.reps.toString());
-        setExSets(props.exToUpdate==undefined ? "" : props.exToUpdate.sets.toString()); 
+        setExSets(props.exToUpdate==undefined ? "" : props.exToUpdate.sets.toString());
+        readEx(props.exToUpdate==undefined ? "" : props.exToUpdate.typeid);
       }, [props.exToUpdate])     
 
     const setsInputHandler=(enteredText)=>{
@@ -32,7 +36,37 @@ const ExModal = (props) => {
     
     const clearInput=()=>{       
         props.closeModal();
-    }    
+    } 
+
+    async function readEx(id){
+        try{
+        const dbResult = await fetchAllExById(id); 
+        console.log("ID: " +id);       
+        setExList(dbResult);
+        console.log(exList);
+        }
+        catch(err){
+            console.log("Error: "+err);
+        }
+        finally{
+        }
+    }  
+    
+    //function opens an Alert -window which asks a confirmation from the user
+    const confirmation = ()=>{
+        Alert.alert(
+          "Päivitetään harjoituksen tiedot.",//title - put at least this - the rest is up to you
+          'Oletko varma?',//Extra message
+          //There can be several buttons
+          //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
+          [{text:'Kyllä', style:'destructive', onPress:()=>updateEx()},
+          //The second button
+          {text:'Peruuta', style:'default',}],
+          {
+            cancelable: true
+          }
+          );
+      }
 
     //a custom button component made by using a TouchableOpacity-component
     const AppButton = ({ onPress, title, backgroundColor, fontColor, iconName }) => (
@@ -54,6 +88,17 @@ const ExModal = (props) => {
     </TouchableOpacity>
     ) 
 
+    const renderItem=({index,item})=>{
+        return (          
+            <View>
+              <Text 
+              style={{fontSize: 16, fontWeight:'bold', color: 'black',}}>{index+1}. {item.date} toistot:{item.reps} setit:{item.sets}
+                <Text style={{color: 'ivory'}}> = {item.reps*item.sets}</Text>
+            </Text>              
+            </View>        
+        );
+      }
+
     return(
         <Modal visible={props.visibility} animationType="slide"> 
             <ImageBackground source={require('../assets/images/background.jpg')}
@@ -66,6 +111,7 @@ const ExModal = (props) => {
                     <View style={styles.formstyle}>
                         <TextInput
                             left={<TextInput.Icon icon="repeat" />}
+                            keyboardType='numeric'
                             mode="outlined" 
                             label="Toistot" 
                             value={exReps} 
@@ -75,6 +121,7 @@ const ExModal = (props) => {
                         />    
                         <TextInput
                             left={<TextInput.Icon icon="weight-lifter" />}
+                            keyboardType='numeric'
                             mode="outlined"   
                             label="Setit" 
                             value={exSets} 
@@ -84,9 +131,18 @@ const ExModal = (props) => {
                         />                        
                     </View>
                     <View style={styles.buttons}>                      
-                        <AppButton title="päivitä" onPress={updateEx} backgroundColor="green" fontColor="ivory" iconName="refresh-circle"/>
+                        <AppButton title="päivitä" onPress={confirmation} backgroundColor="green" fontColor="ivory" iconName="refresh-circle"/>
                         <AppButton title="peruuta" onPress={clearInput} backgroundColor="crimson" fontColor="ivory" iconName="close-box-multiple"/>                     
-                    </View>                                       
+                    </View> 
+                    <LinearGradient colors={['steelblue', 'lightblue', 'ivory']} style={styles.linearGradient}>
+                   {/*  <Surface style={styles.surface2} elevation={5}> */}
+                        <Text style={{color: 'ivory', fontSize: 20, fontWeight: 'bold', marginBottom: 5,}}>TOP 5</Text>
+                        <FlatList         
+                            data={exList}
+                            renderItem={renderItem}
+                        />
+                    </LinearGradient>
+                   {/*  </Surface>  */}                                                           
                 </View>  
             </ImageBackground>           
         </Modal>
@@ -102,7 +158,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container:{
-        display: 'flex',
+        flex: 1,
         margin:10,
         backgroundColor: '#f0f0f5',
         borderColor: 'black',
@@ -169,7 +225,32 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderColor: 'gray',
         borderWidth:1
-      }, 
+      },
+      surface2: {
+        flex: 1,
+        height: '30%',
+        alignSelf: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#e0e0eb',
+        borderRadius: 8,
+        borderColor: 'gray',
+        borderWidth:1,
+        marginTop: 20,
+      },
+      linearGradient: {
+        alignItems: 'center',
+        flex: 1,
+        paddingLeft: 15,
+        paddingRight: 15,
+        borderRadius: 8,
+        margin: 10,
+        borderColor: 'black',
+        borderWidth:1,
+        paddingTop: 10,
+      },      
   });
 
 export default ExModal;
