@@ -40,10 +40,8 @@ const ExModal = (props) => {
 
     async function readEx(id){
         try{
-        const dbResult = await fetchAllExById(id); 
-        console.log("ID: " +id);       
+        const dbResult = await fetchAllExById(id);            
         setExList(dbResult);
-        console.log(exList);
         }
         catch(err){
             console.log("Error: "+err);
@@ -78,9 +76,9 @@ const ExModal = (props) => {
             backgroundColor && { backgroundColor }        
         ]}>           
     <Avatar.Icon 
-        size={26} 
+        size={28} 
         icon={iconName}
-        style={{marginRight:2, backgroundColor:'transparent', fontWeight:'bold'}} 
+        style={{backgroundColor:'transparent', fontWeight:'bold'}} 
     />
     <Text style={[styles.appButtonText, { color:fontColor }]}>
         {title}
@@ -91,9 +89,9 @@ const ExModal = (props) => {
     const renderItem=({index,item})=>{
         return (          
             <View>
-              <Text 
-              style={{fontSize: 16, fontWeight:'bold', color: 'black',}}>{index+1}. {item.date} toistot:{item.reps} setit:{item.sets}
-                <Text style={{color: 'ivory'}}> = {item.reps*item.sets}</Text>
+              <Text style={styles.listItem}>
+                    {index+1}. {item.date} toistot:{item.reps} setit:{item.sets}
+                <Text style={{color: 'gold', fontWeight: '800'}}> = {item.reps*item.sets}</Text>
             </Text>              
             </View>        
         );
@@ -103,7 +101,11 @@ const ExModal = (props) => {
         <Modal visible={props.visibility} animationType="slide"> 
             <ImageBackground source={require('../assets/images/background.jpg')}
                 style={styles.imageBackground} resizeMode='cover'>
-                <View style={styles.container}>
+                <LinearGradient 
+                    start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
+                    colors={['#D3CCE3','#E9E4F0','ivory']}
+                    style={styles.container}
+                >
                     <Surface style={styles.surface} elevation={5}>
                         <Text style={styles.heading}>{exDate}</Text>
                         <Text style={styles.heading}>{exName}</Text>
@@ -117,7 +119,9 @@ const ExModal = (props) => {
                             value={exReps} 
                             style={styles.textinput} 
                             onChangeText={repsInputHandler}
-                            activeOutlineColor="#24478f"
+                            activeOutlineColor="black"
+                            outlineColor='black'
+                            selectionColor='black'
                         />    
                         <TextInput
                             left={<TextInput.Icon icon="weight-lifter" />}
@@ -127,23 +131,39 @@ const ExModal = (props) => {
                             value={exSets} 
                             style={styles.textinput} 
                             onChangeText={setsInputHandler}
-                            activeOutlineColor="#24478f"
+                            activeOutlineColor="black"
+                            outlineColor='black'
                         />                        
                     </View>
                     <View style={styles.buttons}>                      
-                        <AppButton title="päivitä" onPress={confirmation} backgroundColor="green" fontColor="ivory" iconName="refresh-circle"/>
-                        <AppButton title="peruuta" onPress={clearInput} backgroundColor="crimson" fontColor="ivory" iconName="close-box-multiple"/>                     
-                    </View> 
-                    <LinearGradient colors={['steelblue', 'lightblue', 'ivory']} style={styles.linearGradient}>
-                   {/*  <Surface style={styles.surface2} elevation={5}> */}
-                        <Text style={{color: 'ivory', fontSize: 20, fontWeight: 'bold', marginBottom: 5,}}>TOP 5</Text>
+                        <AppButton 
+                            title="päivitä" 
+                            onPress={confirmation} 
+                            backgroundColor="green" 
+                            fontColor="ivory" 
+                            iconName="update"
+                        />
+                        <AppButton 
+                            title="peruuta" 
+                            onPress={clearInput}
+                            backgroundColor="crimson" 
+                            fontColor="ivory" 
+                            iconName="arrow-left-circle"
+                        />
+                                       
+                    </View>                                                                                  
+                </LinearGradient> 
+                <LinearGradient 
+                    start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
+                    colors={['#D3CCE3','#E9E4F0','ivory']}
+                    style={styles.linearGradient}
+                    >                  
+                        <Text style={styles.listHeading}>TOP 5</Text>
                         <FlatList         
                             data={exList}
                             renderItem={renderItem}
                         />
-                    </LinearGradient>
-                   {/*  </Surface>  */}                                                           
-                </View>  
+                </LinearGradient>          
             </ImageBackground>           
         </Modal>
     );
@@ -157,8 +177,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: 'center',
     },
-    container:{
-        flex: 1,
+    container:{      
         margin:10,
         backgroundColor: '#f0f0f5',
         borderColor: 'black',
@@ -174,21 +193,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     textinput:{
-      backgroundColor: '#f6f6f6',
-      width: '45%',
-      color: 'ivory',
-      fontSize: 20,
-      fontWeight: 'bold',
+        backgroundColor: '#f6f6f6',
+        width: '45%',
+        color: 'ivory',
+        fontSize: 20,
+        fontWeight: 'bold',
     },
     formstyle:{
-      width:'95%',
-      flexDirection: 'row',
-      alignSelf: 'center',
-      justifyContent: 'space-around',
-      marginBottom: 20,
-      marginTop: 10,
-      paddingLeft: 10,
-      paddingRight: 10,
+        width:'95%',
+        flexDirection: 'row',
+        alignSelf: 'center',
+        justifyContent: 'space-around',
+        marginBottom: 20,
+        marginTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
     },
     buttons:{    
         width: '70%',
@@ -199,58 +218,60 @@ const styles = StyleSheet.create({
     appButtonContainer: {
         display: 'flex',
         flexDirection: 'row',
-        elevation: 2,
         backgroundColor: "#009688",
-        borderRadius: 8,
+        borderRadius: 20,
         borderColor: 'black',
         borderWidth: 1,
-        paddingVertical: 5,
+        paddingVertical: 3,
         paddingHorizontal: 10,
         marginRight: 10,      
     },
-      appButtonText: {
+    appButtonText: {
         fontSize: 14,
         color: "#fff",
         fontWeight: "bold",
         alignSelf: "center",
         textTransform: "uppercase"
-      },
-      surface: {
+    },
+    surface: {
         alignSelf: 'center',
         paddingVertical: 10,
         paddingHorizontal: 15,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#e0e0eb',
+        backgroundColor: '#f6f6f6',
         borderRadius: 8,
-        borderColor: 'gray',
-        borderWidth:1
-      },
-      surface2: {
-        flex: 1,
-        height: '30%',
-        alignSelf: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#e0e0eb',
+        borderColor: 'black',
+        borderWidth: 1,
+    },      
+    linearGradient: {       
+        flex: 1, 
+        marginVertical: 10,   
+        alignItems: 'center',      
+        paddingHorizontal: 10,
         borderRadius: 8,
-        borderColor: 'gray',
-        borderWidth:1,
-        marginTop: 20,
-      },
-      linearGradient: {
-        alignItems: 'center',
-        flex: 1,
-        paddingLeft: 15,
-        paddingRight: 15,
-        borderRadius: 8,
-        margin: 10,
         borderColor: 'black',
         borderWidth:1,
         paddingTop: 10,
-      },      
+    },
+    listHeading:{
+        color: 'crimson',
+        fontSize: 26,
+        fontWeight: '800',
+        marginBottom: 10,
+    },
+    listItem:{
+        fontSize: 18,
+        fontWeight:'bold',
+        color: 'ivory',
+        paddingVertical: 2,
+        paddingHorizontal: 4,
+        marginBottom: 3,
+        backgroundColor: 'green',
+        borderWidth: 1,
+        borderColor: 'black',
+        borderRadius: 5,
+    },     
   });
 
 export default ExModal;

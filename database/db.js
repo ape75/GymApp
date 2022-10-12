@@ -64,25 +64,25 @@ export const init=()=>{
             tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?)', [4, '2022-10-07', 30, 20, 1]); */
 
             tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?), (?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?)', 
-            [   1, '2022/10/08', 20, 5, 2,
-                2, '2022/10/08', 10, 10, 5,
-                3, '2022/10/07', 20, 15, 4,
-                4, '2022/10/07', 30, 20, 1,
-                5, '2022/10/06', 25, 12, 10,
-                6, '2022/10/06', 5, 5, 9,
-                7, '2022/10/06', 17, 5, 6,
-                8, '2022/10/05', 22, 10, 7,
-                9, '2022/10/04', 33, 1, 5,
-                10, '2022/10/04', 5, 5, 8,
-                11, '2022/10/06', 7, 8, 3,
-                12, '2022/10/06', 14, 8, 7,
-                13, '2022/10/06', 10, 10, 15,
-                14, '2022/10/09', 15, 6, 8,
-                15, '2022/10/10', 13, 6, 8,
-                16, '2022/10/11', 20, 4, 8,
-                17, '2022/10/12', 10, 8, 8,
-                18, '2022/10/13', 21, 5, 8,
-                19, '2022/10/14', 18, 7, 8,
+            [   1, '2022-10-08', 20, 5, 2,
+                2, '2022-10-08', 10, 10, 5,
+                3, '2022-10-07', 20, 15, 4,
+                4, '2022-10-07', 30, 20, 1,
+                5, '2022-10-06', 25, 12, 10,
+                6, '2022-10-06', 5, 5, 9,
+                7, '2022-10-06', 17, 5, 6,
+                8, '2022-10-19', 22, 10, 7,
+                9, '2022-10-04', 33, 1, 5,
+                10, '2022-10-04', 5, 5, 8,
+                11, '2022-10-06', 7, 8, 3,
+                12, '2022-10-06', 14, 8, 7,
+                13, '2022-10-30', 10, 10, 15,
+                14, '2022-10-09', 15, 6, 8,
+                15, '2022-10-10', 13, 6, 8,
+                16, '2022-10-20', 20, 4, 8,
+                17, '2022-10-12', 10, 8, 8,
+                18, '2022-10-13', 21, 5, 8,
+                19, '2022-10-31', 18, 7, 8,
             ]);            
 
         });
@@ -90,6 +90,30 @@ export const init=()=>{
     });
     return promise;
 };
+
+//function reads all the distinct dates of done excercises 
+export const fetchExDoneDays=()=>{
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{            
+            tx.executeSql('select distinct date from exdone' , [],
+                (tx, result)=>{
+                    let items=[];                    
+                    for (let i = 0; i < result.rows.length; i++){
+                        items.push(result.rows.item(i));                       
+                    }                   
+                    resolve(items);
+                },
+                (tx,err)=>{
+                    console.log("Err");
+                    console.log(err);
+                    reject(err);
+                }
+            );
+        });
+    });
+    return promise;
+};
+
 
 //function reads all the information about all done exercises from both tables
 export const fetchAllExDone=()=>{
@@ -122,12 +146,11 @@ export const fetchExByDay=(day)=>{
             tx.executeSql('select exdone.id, exdone.date, exdone.typeid, extypes.name, extypes.exgroup, exdone.reps, exdone.sets from exdone inner join extypes on extypes.id = exdone.typeid where exdone.date like ?' ,
              [day],
                 (tx, result)=>{
-                    let items=[];//Create a new empty Javascript array
-                    //And add all the items of the result (database rows/records) into that table
+                    let items=[];                  
                     for (let i = 0; i < result.rows.length; i++){
                         items.push(result.rows.item(i));                       
                     }                   
-                    resolve(items);//The data the Promise will have when returned
+                    resolve(items);
                 },
                 (tx,err)=>{
                     console.log("Err");
@@ -187,12 +210,11 @@ export const fetchAllExById=(id)=>{
             tx.executeSql('select exdone.id, exdone.date, extypes.name, exdone.reps, exdone.sets from exdone inner join extypes on extypes.id = exdone.typeid where exdone.typeid=? order by (reps*sets) desc limit 5' ,
              [id],
                 (tx, result)=>{
-                    let items=[];//Create a new empty Javascript array
-                    //And add all the items of the result (database rows/records) into that table
+                    let items=[];                   
                     for (let i = 0; i < result.rows.length; i++){
                         items.push(result.rows.item(i));                       
                     }                   
-                    resolve(items);//The data the Promise will have when returned
+                    resolve(items);
                 },
                 (tx,err)=>{
                     console.log("Err");
