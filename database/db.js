@@ -210,7 +210,7 @@ so that user can choose which exercise he wants to do today*/
 export const fetchExerciseTypes=()=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
-            tx.executeSql('select * from'+tableName, [],
+            tx.executeSql('select * from '+tableName, [],
                 (tx, result)=>{
                     resolve(result.rows.raw());
                 },
@@ -219,6 +219,24 @@ export const fetchExerciseTypes=()=>{
                     console.log(err);
                     reject(err);
                 }
+            );
+        });
+    });
+    return promise;
+};
+
+// This function adds a new type of exercise into the database
+export const addNewEx=(newEx, newExGroup)=>{
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('insert into '+tableName+'(name, exgroup) values(?,?);',
+            [newEx, newExGroup],
+            ()=>{
+                    resolve();
+            },
+            (_,err)=>{
+                    reject(err);
+            }
             );
         });
     });
