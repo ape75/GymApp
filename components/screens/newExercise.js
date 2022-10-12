@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground } from 'react-native';
-import {fetchExByDay, updateExById, addNewEx} from '../../database/db';
+import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground, FlatList, TouchableOpacity } from 'react-native';
+import {fetchExByDay, updateExById, addNewEx, fetchExerciseTypes, updateEx} from '../../database/db';
 
 export const NewExercise=()=>{
 
     const [newEx, setNewEx]= useState();
     const [newExGroup, setNewExGroup]= useState();
+    const [exListAll, setExListAll]=useState([]);
 
     const newExHandler=(enteredText)=>{
         setNewEx(enteredText);
@@ -23,34 +24,57 @@ export const NewExercise=()=>{
         addNewEx(newEx, newExGroup);
     }
 
+    async function readAllEx() {
+        try{
+            const dbResult = await fetchExerciseTypes();
+            console.log('dbResult sisältö');
+            console.log(dbResult);
+            setExListAll(dbResult);
+        }
+        catch (err) {
+            console.log('Error: '+err);
+        }
+    }
+
+    //fetchExerciseTypes
+    const renderItem=({item, index})=>{
 
     return (
-        
+        <TouchableOpacity>          
+        <Text key={index}>{index+1}. {item.name} </Text>
+         </TouchableOpacity>
+    );
+}
+
+return (
 
     <ImageBackground source={require('../../assets/images/salikuva.jpg')} style={styles.imageBackground} resizeMode='cover'>
     <View style={styles.container}>
         <View style={styles.upper}>
 
         </View>
-        <View style={styles.newWindow}>
-            <View style>
-                <Text>Lisää uusi harjoitus</Text>   
+            <View style={styles.newWindow}>
+                <View style>
+                    <Text>Lisää uusi harjoitus</Text>   
+                </View>
+                <TextInput style={styles.inputStyle} placeholder="Anna harjoituksen nimi..." 
+                    onChangeText={newExHandler}/>
+                    <TextInput style={styles.inputStyle} placeholder="Anna lihasryhmä..." 
+                    onChangeText={newExGroupHandler}/>
+                <Button style={styles.buttonStyle} color='#a4161a' title='Lisää!' onPress={()=>addNewEx(newEx, newExGroup)} 
+                />
+                
             </View>
-            <TextInput style={styles.inputStyle} placeholder="Anna harjoituksen nimi..." 
-                onChangeText={newExHandler}/>
-                  <TextInput style={styles.inputStyle} placeholder="Anna lihasryhmä..." 
-                onChangeText={newExGroupHandler}/>
-            <Button style={styles.buttonStyle} color='#a4161a' title='Lisää!' onPress={()=>addNewEx(newEx, newExGroup)} 
-               />
-            
-        </View>
-        {/*<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Test</Text>
-        <Button onPress={() => navigation.goBack()} title="Back" />
-        <Button onPress={() => navigation.navigate('Home')} title="Home screen" />
-    </View>*/}
-        <View>
-            
+       
+        <View style={styles.listStyle}>
+        <Button title="Näytä kaikki" onPress={()=>readAllEx()} />
+            <View style={styles.listStyle}>
+                        <Text style={styles.textStyle}>Kaikki Harjoitukset</Text>
+                        <FlatList
+                            data={exListAll}
+                            renderItem={renderItem}       
+                        /> 
+            </View>
         </View>
     </View>
     </ImageBackground>  
@@ -64,6 +88,9 @@ const styles = StyleSheet.create({
       },
     textView: {
         
+    },
+    textStyle:{
+        color: 'white',
     },
     newWindow: {
         flex:1,
@@ -93,5 +120,9 @@ const styles = StyleSheet.create({
       },
     buttonStyle: {
         
+    },
+    listStyle: {
+        flex: 1,
     }
+
 });
