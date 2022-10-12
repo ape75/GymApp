@@ -63,7 +63,7 @@ export const init=()=>{
             tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?)', [3, '2022-10-07', 20, 15, 4]);
             tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?)', [4, '2022-10-07', 30, 20, 1]); */
 
-            tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?)', 
+            tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?), (?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?)', 
             [   1, '2022/10/08', 20, 5, 2,
                 2, '2022/10/08', 10, 10, 5,
                 3, '2022/10/07', 20, 15, 4,
@@ -77,7 +77,13 @@ export const init=()=>{
                 11, '2022/10/06', 7, 8, 3,
                 12, '2022/10/06', 14, 8, 7,
                 13, '2022/10/06', 10, 10, 15,
-            ]);
+                14, '2022/10/09', 15, 6, 8,
+                15, '2022/10/10', 13, 6, 8,
+                16, '2022/10/11', 20, 4, 8,
+                17, '2022/10/12', 10, 8, 8,
+                18, '2022/10/13', 21, 5, 8,
+                19, '2022/10/14', 18, 7, 8,
+            ]);            
 
         });
              
@@ -89,7 +95,7 @@ export const init=()=>{
 export const fetchAllExDone=()=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
-            tx.executeSql('select exdone.id, exdone.date, extypes.name, extypes.exgroup, exdone.reps, exdone.sets from exdone inner join extypes on extypes.id = exdone.typeid' , [],
+            tx.executeSql('select exdone.id, exdone.typeid, exdone.date, extypes.name, extypes.exgroup, exdone.reps, exdone.sets from exdone inner join extypes on extypes.id = exdone.typeid' , [],
                 (tx, result)=>{
                     let items=[];//Create a new empty Javascript array
                     //And add all the items of the result (database rows/records) into that table
@@ -113,7 +119,7 @@ export const fetchAllExDone=()=>{
 export const fetchExByDay=(day)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
-            tx.executeSql('select exdone.id, exdone.date, extypes.name, extypes.exgroup, exdone.reps, exdone.sets from exdone inner join extypes on extypes.id = exdone.typeid where exdone.date like ?' ,
+            tx.executeSql('select exdone.id, exdone.date, exdone.typeid, extypes.name, extypes.exgroup, exdone.reps, exdone.sets from exdone inner join extypes on extypes.id = exdone.typeid where exdone.date like ?' ,
              [day],
                 (tx, result)=>{
                     let items=[];//Create a new empty Javascript array
@@ -156,16 +162,17 @@ export const updateExById=(id, reps, sets)=>{
     return promise;
 };
 
-export const addNewEx=(newEx, newExGroup)=>{
+//this function deletes an exercise with a given id from the database
+export const deleteEx=(id)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
-            tx.executeSql('insert into '+tableName+'(name, exgroup) values(?,?);',
-            [newEx, newExGroup],
+            tx.executeSql('delete from '+tableName2+' where id=?;',
+            [id],
             ()=>{
                     resolve();
             },
             (_,err)=>{
-                    reject(err);
+                reject(err);
             }
             );
         });
@@ -173,19 +180,18 @@ export const addNewEx=(newEx, newExGroup)=>{
     return promise;
 };
 
-export const fetchAllEx=()=>{
+//function reads top 5 reps*sets exercises done that have the same id
+export const fetchAllExById=(id)=>{
     const promise=new Promise((resolve, reject)=>{
-        db.transaction((tx)=>{
-            //Here we select all from the table fish
-            tx.executeSql('select * from '+tableName, [],
+        db.transaction((tx)=>{            
+            tx.executeSql('select exdone.id, exdone.date, extypes.name, exdone.reps, exdone.sets from exdone inner join extypes on extypes.id = exdone.typeid where exdone.typeid=? order by (reps*sets) desc limit 5' ,
+             [id],
                 (tx, result)=>{
                     let items=[];//Create a new empty Javascript array
                     //And add all the items of the result (database rows/records) into that table
                     for (let i = 0; i < result.rows.length; i++){
-                        items.push(result.rows.item(i));//The form of an item is {"breed": "Pike", "id": 1, "weight": 5000}
-                        console.log(result.rows.item(i));//For debugging purposes to see the data in console window
-                    }
-                    console.log(items);//For debugging purposes to see the data in console window
+                        items.push(result.rows.item(i));                       
+                    }                   
                     resolve(items);//The data the Promise will have when returned
                 },
                 (tx,err)=>{
@@ -199,4 +205,22 @@ export const fetchAllEx=()=>{
     return promise;
 };
 
-
+/*this function is used to get exercise types to homescreen workout form 
+so that user can choose which exercise he wants to do today*/
+export const fetchExerciseTypes=()=>{
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{            
+            tx.executeSql('select * from'+tableName, [],
+                (tx, result)=>{
+                    resolve(result.rows.raw());
+                },
+                (tx,err)=>{
+                    console.log("Err");
+                    console.log(err);
+                    reject(err);
+                }
+            );
+        });
+    });
+    return promise;
+};
