@@ -6210,10 +6210,10 @@
   "resolved" "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.4.1.tgz"
   "version" "4.4.1"
 
-"react-native-screens@^3.17.0", "react-native-screens@>= 3.0.0":
-  "integrity" "sha512-OZCQU7+3neHNaM19jBkYRjL50kXz7p7MUgWQTCcdRoshcCiolf8aXs4eRVQKGK6m1RmoB8UL0//m5R9KoR+41w=="
-  "resolved" "https://registry.npmjs.org/react-native-screens/-/react-native-screens-3.17.0.tgz"
-  "version" "3.17.0"
+"react-native-screens@^3.18.1", "react-native-screens@>= 3.0.0":
+  "integrity" "sha512-GtEC1AbvpvtKDJldavuONF/hXW1aEZO7qz8SioyHrV9L9/nDiy+iTviMFmeEoix9KwmEHHxoYxc0xiDrFxKHyA=="
+  "resolved" "https://registry.npmjs.org/react-native-screens/-/react-native-screens-3.18.1.tgz"
+  "version" "3.18.1"
   dependencies:
     "react-freeze" "^1.0.0"
     "warn-once" "^0.1.0"
