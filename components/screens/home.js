@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image} from 'react-native';
-//import ChooseExTypeModal from '../../components/ChooseExTypeModal';
+import ChooseExTypeModal from '../../components/ChooseExTypeModal';
 
 export const HomeScreen=(props)=>{
 
     const [workoutList, setWorkoutList]= useState([{workoutForm:""}]);
-//    const [modalVisible, setModalVisible]=useState(false);
+    const [modalVisible, setModalVisible]=useState(false);
 
     const [workout, setWorkout]=useState('');
     const [reps, setReps]=useState('');
@@ -20,8 +20,9 @@ export const HomeScreen=(props)=>{
       setWorkoutList(workoutList=>workoutList.filter((workoutForm, id)=>id!=index));    
     }
   
-    const workoutInputHandler = (val) => {
-      setWorkout(val);
+    const workoutInputHandler = (type) => {
+      setWorkout(type);
+      setModalVisible(false);
     };
   
     const repsInputHandler = (val) => {
@@ -31,25 +32,25 @@ export const HomeScreen=(props)=>{
     const setsInputHandler = (val) => {
       setSets(val);
     };
-/*
+
     const chooseExModal=()=>{
       setModalVisible(true);
     }
 
     const hideChooseExModal=()=>{
       setModalVisible(false);
-    } */
-  //<ChooseExTypeModal visibility={modalVisible} workoutType={workoutInputHandler} closeModal={hideChooseExModal}/>
+    } 
+  //
     return (
       <View style={styles.container}>
-        
+        <ChooseExTypeModal visibility={modalVisible} workoutType={workoutInputHandler} closeModal={hideChooseExModal}/>
 
         <Button onPress={handleWorkoutAdd} title="Tämän päivän harjoitus"/>
         <ScrollView contentContainerStyle={styles.scrollviewwidthstyle} style={styles.scrollviewstyle}>
           {workoutList.map((workoutForm,index) => (
             <View key={index} style={styles.todaysworkout}>
             <Text>Tämän päivän treeni</Text>
-            <TextInput style={styles.textinput} value={workoutForm.workout} /*onPress={chooseExModal}*/ onChange={workoutInputHandler} placeholder="Harjoitus" />
+            <TextInput style={styles.textinput} value={workout} onFocus={chooseExModal} placeholder="Harjoitus" />
             <TextInput style={styles.textinput} value={workoutForm.reps} onChange={repsInputHandler} placeholder="Toistot" />
             <TextInput style={styles.textinput} value={workoutForm.sets} onChange={setsInputHandler} placeholder="Setit" />
               <View style={styles.inputstyle}>
