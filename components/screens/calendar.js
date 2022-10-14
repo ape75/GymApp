@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, ImageBackground } from 'react-native';
+import {View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, ImageBackground} from 'react-native';
 import {fetchExDoneDays, fetchExByDay, updateExById, deleteEx} from '../../database/db';
 import ExModal from '../ExModal';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import LinearGradient from 'react-native-linear-gradient';
-import { Avatar} from 'react-native-paper';
+import {Avatar} from 'react-native-paper';
+import { useIsFocused } from '@react-navigation/native';
 
 //set local month- and day -names into Calendar -components configuration
 LocaleConfig.locales['fi'] = {
@@ -29,7 +30,7 @@ LocaleConfig.locales['fi'] = {
   };
   LocaleConfig.defaultLocale = 'fi';
 
-export const CalendarScreen=(props)=>{
+export const CalendarScreen=()=>{
 
     const [selectedDate, setSelectedDate] = useState('');
     const [textDate, setTextdDate] = useState('');
@@ -41,11 +42,20 @@ export const CalendarScreen=(props)=>{
     const [days, setDays] = useState(new Object);
     const [oldDay, setOldDay] = useState("");
 
-    let exDaysObject = {};
-  
-    useEffect(() => {        
-        readAllExDone();
-    }, [])    
+    const isFocused = useIsFocused();
+
+    let exDaysObject = {}; 
+
+    //these functions are executed every time screen is loaded or screen gets focused again 
+    useEffect(() => {
+        if (isFocused) {
+            readAllExDone();
+            setExList([]);
+            setSelectedDate("");
+        }
+      }, [isFocused]);
+    
+    
     
     //this function defines the logic how dates are marked and selected in the calendar -component when a date is clicked
     const setMarkers=(day)=>{
@@ -226,12 +236,12 @@ export const CalendarScreen=(props)=>{
                 theme={{                 
                     calendarBackground: '#e6eeff',
                     textSectionTitleColor: '#666699',
-                    selectedDayBackgroundColor: 'darkblue',
+                    selectedDayBackgroundColor: '#0066ff',
                     selectedDayTextColor: 'ivory',
                     todayTextColor: 'red',
                     dayTextColor: 'black',
                     textDisabledColor: 'steelblue',
-                    dotColor: 'darkblue',
+                    dotColor: '#29a329',
                     selectedDotColor: 'ivory',
                     arrowColor: 'blue',
                     monthTextColor: 'black',
@@ -256,31 +266,30 @@ export const CalendarScreen=(props)=>{
                 // Handler which gets executed when press arrow icon right. It receive a callback can go next month
                 onPressArrowRight={addMonth => addMonth()}    
                 // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
-                disableAllTouchEventsForDisabledDays={true}
-                // Replace default month and year title with custom one. the function receive a date as parameter                
+                disableAllTouchEventsForDisabledDays={true}                                
             />    
             <View style={styles.formStyle}>
                 <AppButton 
                     title="hae" 
                     onPress={() => readAllExDoneByDay(selectedDate)} 
-                    backgroundColor="#001a66" 
+                    backgroundColor="#0066ff" 
                     fontColor="ivory"
                     iconName="database-arrow-right"
                 />
                 <AppButton 
-                    title="tänään" 
+                    title="harjoitukset tänään" 
                     onPress={() => readTodaysExDone()} 
-                    backgroundColor="darkgreen" 
+                    backgroundColor="#29a329" 
                     fontColor="ivory"
                     iconName="calendar-today"
                 />
-                <AppButton 
+            {/*     <AppButton 
                     title="takaisin" 
                     onPress={() => props.navigation.goBack()} 
                     backgroundColor="crimson" 
                     fontColor="ivory"
                     iconName="arrow-left-circle"
-                />          
+                />   */}        
             </View>
             <RenderList/> 
         </ImageBackground>         
@@ -345,7 +354,6 @@ export const CalendarScreen=(props)=>{
                 day = '0' + day;
             }           
             let result = [year, month, day].join('-');
-            console.log(result);
             readAllExDoneByDay(result);
         }
         catch(err){
