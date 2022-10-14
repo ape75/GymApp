@@ -4236,11 +4236,6 @@
     "html-escaper" "^2.0.0"
     "istanbul-lib-report" "^3.0.0"
 
-"jalaali-js@^1.1.0":
-  "integrity" "sha512-io974va+Qyu+UfuVX3UIAgJlxLhAMx9Y8VMfh+IG00Js7hXQo1qNQuwSiSa0xxco0SVgx5HWNkaiCcV+aZ8WPw=="
-  "resolved" "https://registry.npmjs.org/jalaali-js/-/jalaali-js-1.2.6.tgz"
-  "version" "1.2.6"
-
 "jest-changed-files@^26.6.2":
   "integrity" "sha512-fDS7szLcY9sCtIip8Fjry9oGf3I2ht/QT21bAHm5Dmf0mD4X3ReNUf17y+bO6fR8WgbIZTlbyG1ak/53cbRzKQ=="
   "resolved" "https://registry.npmjs.org/jest-changed-files/-/jest-changed-files-26.6.2.tgz"
@@ -5472,6 +5467,7 @@
   dependencies:
     "minimist" "^1.2.6"
 
+
 "moment-jalaali@^0.9.2":
   "integrity" "sha512-v8wXjQplvk5ez+sUqgsWIrafwIf1BEXXvzTYwsg1wHcqh27nSgKPCJ6FnZRrCz03MoNyB9N31L0oms+vE8Rq7g=="
   "resolved" "https://registry.npmjs.org/moment-jalaali/-/moment-jalaali-0.9.6.tgz"
@@ -5490,6 +5486,7 @@
     "moment" ">= 2.9.0"
 
 "moment@^2.22.2", "moment@^2.24.0", "moment@>= 2.9.0":
+
   "integrity" "sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w=="
   "resolved" "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
   "version" "2.29.4"
@@ -6205,14 +6202,6 @@
   "resolved" "https://registry.npmjs.org/react-native-linear-gradient/-/react-native-linear-gradient-2.6.2.tgz"
   "version" "2.6.2"
 
-"react-native-modern-datepicker@^1.0.0-beta.91":
-  "integrity" "sha512-tyyS6iswwxn/CWIgk9j82X5/9gkgAQuI4fiWa+TEWjOo1WIhBr0x7914mtagrVuVgJCMRnHCopCIWL78afakHw=="
-  "resolved" "https://registry.npmjs.org/react-native-modern-datepicker/-/react-native-modern-datepicker-1.0.0-beta.91.tgz"
-  "version" "1.0.0-beta.91"
-  dependencies:
-    "moment-jalaali" "^0.9.2"
-    "prop-types" "^15.7.2"
-
 "react-native-paper@^5.0.0-rc.6":
   "integrity" "sha512-62SRf7vZdwTg/7JXXzcRtEwUyPUVtPu2XZNGVeJ0s96rjAud/V7Ixig7c3Za71fn7Qh/G60PBSq9Gnm0c7joSA=="
   "resolved" "https://registry.npmjs.org/react-native-paper/-/react-native-paper-5.0.0-rc.6.tgz"
@@ -6240,10 +6229,10 @@
   "resolved" "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.4.1.tgz"
   "version" "4.4.1"
 
-"react-native-screens@^3.17.0", "react-native-screens@>= 3.0.0":
-  "integrity" "sha512-OZCQU7+3neHNaM19jBkYRjL50kXz7p7MUgWQTCcdRoshcCiolf8aXs4eRVQKGK6m1RmoB8UL0//m5R9KoR+41w=="
-  "resolved" "https://registry.npmjs.org/react-native-screens/-/react-native-screens-3.17.0.tgz"
-  "version" "3.17.0"
+"react-native-screens@^3.18.1", "react-native-screens@>= 3.0.0":
+  "integrity" "sha512-GtEC1AbvpvtKDJldavuONF/hXW1aEZO7qz8SioyHrV9L9/nDiy+iTviMFmeEoix9KwmEHHxoYxc0xiDrFxKHyA=="
+  "resolved" "https://registry.npmjs.org/react-native-screens/-/react-native-screens-3.18.1.tgz"
+  "version" "3.18.1"
   dependencies:
     "react-freeze" "^1.0.0"
     "warn-once" "^0.1.0"
@@ -6266,7 +6255,9 @@
     "prop-types" "^15.7.2"
     "yargs" "^16.1.1"
 
+
 "react-native@*", "react-native@>= 0.30.0", "react-native@>=0.14.0", "react-native@>=0.42.0", "react-native@>=0.59", "react-native@0.70.1":
+
   "integrity" "sha512-AUh4NZLFdvyjSiYWCtTROCrC7loxeeZ/TzBnkZwp3kb9XmMu7/kzvWn2c5sEMnzW7X/0JSul8jXexGVdpnCoSA=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.70.1.tgz"
   "version" "0.70.1"
