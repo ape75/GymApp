@@ -7,7 +7,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {Avatar} from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native';
 
-//set local month- and day -names into Calendar -components configuration
+//set local (Finnish in this case) month- and day -names into Calendar -components configuration
 LocaleConfig.locales['fi'] = {
     monthNames: [
       'Tammikuu',
@@ -23,7 +23,7 @@ LocaleConfig.locales['fi'] = {
       'Marraskuu',
       'Joulukuu'
     ],
-    monthNamesShort: ['Tammi', 'Helmi', 'Maalis', 'Huhti', 'Tou', 'Kesä', 'Heinä', 'Elo', 'Syys', 'Loka', 'Marras', 'Joulu'],
+    monthNamesShort: ['Tammi', 'Helmi', 'Maalis', 'Huhti', 'Touko', 'Kesä', 'Heinä', 'Elo', 'Syys', 'Loka', 'Marras', 'Joulu'],
     dayNames: ['Sunnuntai', 'Maanantai', 'Tiistai', 'Keskiviikko', 'Torstai', 'Perjantai', 'Lauantai'],
     dayNamesShort: ['Su', 'Ma', 'Ti', 'Ke', 'To', 'Pe', 'La'],
     today: "tänään"
@@ -105,10 +105,10 @@ export const CalendarScreen=()=>{
         );
       }   
       
-      //function that implements an Alert -window if the selected date has no entries
-      const alertEmpty = ()=>{
+      //function that implements an Alert -window if the specific date has no entries
+      const alertEmpty = (date)=>{
         Alert.alert(
-          ""+selectedDate,//title - put at least this - the rest is up to you
+          ""+date,//title - put at least this - the rest is up to you
           "Ei merkintöjä annetulla päivämäärällä.",//Extra message
           //There can be several buttons
           //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
@@ -327,7 +327,7 @@ export const CalendarScreen=()=>{
         try{
         const dbResult = await fetchExByDay(date);        
         if(dbResult.length===0){
-            alertEmpty();
+            alertEmpty(date);
         }        
         setExList(dbResult);
         setTextdDate(date);        
@@ -373,10 +373,9 @@ export const CalendarScreen=()=>{
         }
         finally{     
         }
-        await readAllExDone(textDate);
+        await readAllExDoneByDay(textDate);
       }
 };
-
 
 
   const styles = StyleSheet.create({    
@@ -401,7 +400,7 @@ export const CalendarScreen=()=>{
     },
     listItemStyle:{
         width:'95%',
-        alignSelf: 'center',        
+        alignSelf: 'center',      
         padding:3,
         backgroundColor: "crimson",
         margin: 2,
