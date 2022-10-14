@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground, FlatList, TouchableOpacity, Modal } from 'react-native';
 import {fetchExByDay, updateExById, addNewEx, fetchExerciseTypes, updateEx} from '../../database/db';
-import ShowAllExModal from '../ShowAllExModal';
+
 
 
 export const NewExercise=()=>{
