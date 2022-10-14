@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground, FlatList, TouchableOpacity } from 'react-native';
+import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground, FlatList, TouchableOpacity, Modal } from 'react-native';
 import {fetchExByDay, updateExById, addNewEx, fetchExerciseTypes, updateEx} from '../../database/db';
+import ShowAllExModal from '../ShowAllExModal';
+
 
 export const NewExercise=()=>{
 
     const [newEx, setNewEx]= useState();
     const [newExGroup, setNewExGroup]= useState();
+    const [visibility, setVisibility]= useState(false);
     const [exListAll, setExListAll]=useState([]);
 
     const newExHandler=(enteredText)=>{
@@ -30,11 +33,24 @@ export const NewExercise=()=>{
             console.log('dbResult sisältö');
             console.log(dbResult);
             setExListAll(dbResult);
+            openModal();
         }
         catch (err) {
             console.log('Error: '+err);
         }
     }
+
+
+     //function which sets the Modal visibility attribute to "true" and the modal view is opened
+     const openModal=()=>{
+        setVisibility(true);
+    }
+
+     //function which sets the Modal visibility attribute to "false" and the modal view is closed
+    const closeModal=()=>{
+        setVisibility(false);
+    }
+
 
     //fetchExerciseTypes
     const renderItem=({item, index})=>{
@@ -45,6 +61,7 @@ export const NewExercise=()=>{
          </TouchableOpacity>
     );
 }
+
 
 return (
 
@@ -61,21 +78,27 @@ return (
                     onChangeText={newExHandler}/>
                     <TextInput style={styles.inputStyle} placeholder="Anna lihasryhmä..." 
                     onChangeText={newExGroupHandler}/>
-                <Button style={styles.buttonStyle} color='#a4161a' title='Lisää!' onPress={()=>addNewEx(newEx, newExGroup)} 
+                <Button color='#a4161a' title='Lisää!' onPress={()=>addNewEx(newEx, newExGroup)} 
                 />
-                
+            
+                <Button p='2' color='#a4161a' title="Näytä kaikki" onPress={()=>readAllEx()} />
+
+                <Modal visible={visibility}>
+                    <View style={styles.listStyle}>
+                        
+                            <View style={styles.listStyle}>
+                                <Text style={styles.textStyle}>Kaikki Harjoitukset</Text>
+                                <FlatList
+                                    data={exListAll}
+                                    renderItem={renderItem}       
+                                        /> 
+                            </View>
+                        <Button style={styles.buttonStyle} title="Palaa Takaisin" onPress={closeModal} />
+                    </View>
+                </Modal>
             </View>
        
-        <View style={styles.listStyle}>
-        <Button title="Näytä kaikki" onPress={()=>readAllEx()} />
-            <View style={styles.listStyle}>
-                        <Text style={styles.textStyle}>Kaikki Harjoitukset</Text>
-                        <FlatList
-                            data={exListAll}
-                            renderItem={renderItem}       
-                        /> 
-            </View>
-        </View>
+  
     </View>
     </ImageBackground>  
     
@@ -90,7 +113,7 @@ const styles = StyleSheet.create({
         
     },
     textStyle:{
-        color: 'white',
+        color: 'black',
     },
     newWindow: {
         flex:1,
@@ -119,7 +142,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
       },
     buttonStyle: {
-        
+        marginBottom: 10,
+        borderRadius: 7,
     },
     listStyle: {
         flex: 1,
