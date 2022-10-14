@@ -1,15 +1,25 @@
-/*import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, Modal, View, TextInput, Button, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
-import {fetchExerciseTypes} from '../../database/db';
+import {fetchExerciseTypes} from '../database/db';
+import { useIsFocused } from '@react-navigation/native';
 
-const ChooseExType = (props) => {
+
+const ChooseExTypeModal = (props) => {
     const [type, setType]=useState('');
     const [exerciseTypes, setExList]=useState([]);
+    const isFocused = useIsFocused();
+
+    useEffect(()=>{
+      if (isFocused){
+        readAllEx()
+      }
+    },[isFocused])
 
     const clearSelection=()=>{
         setType('');
         props.closeModal();
     }
+
     async function readAllEx() {
         try{
             const result = await fetchExerciseTypes();
@@ -22,7 +32,7 @@ const ChooseExType = (props) => {
 
     const renderItem=({item, index})=>{
         return (
-            <TouchableOpacity onPress={()=>props.workoutType(type)}>
+            <TouchableOpacity onPress={()=>props.workoutType(item.name)}>
             <Text key={index}>{item.name}</Text>
             </TouchableOpacity>
         );
@@ -30,7 +40,6 @@ const ChooseExType = (props) => {
 
   return(
     <Modal visible={props.visibility}>
-        {readAllEx}
         <View style={styles.listStyle}>
             <FlatList data={exerciseTypes} renderItem={renderItem} />
             <Button title ="Peruuta" onPress={clearSelection}/>
@@ -62,4 +71,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ChooseExType;*/
+export default ChooseExTypeModal;
