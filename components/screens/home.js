@@ -1,16 +1,45 @@
+import {useIsFocused} from '@react-navigation/native';
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image} from 'react-native';
 import ChooseExTypeModal from '../../components/ChooseExTypeModal';
+import {addNewDoneEx} from '../../database/db';
 
 export const HomeScreen=(props)=>{
 
     const [workoutList, setWorkoutList]= useState([{workoutForm:""}]);
-    const [modalVisible, setModalVisible]=useState(false);
-
     const [workout, setWorkout]=useState('');
+    const [workoutID, setWID]=useState('');
     const [reps, setReps]=useState('');
     const [sets, setSets]=useState('');
-  
+    const [currentDate, setCurrentDate] = useState('');
+
+    const [modalVisible, setModalVisible]=useState(false);
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+      if (isFocused){
+        {getToday()}
+      }
+    }, [isFocused]);
+    //gets todays date to be used in adding done exercise 
+    function getToday(){
+      let date = new Date();
+      let year = new Date().getFullYear();
+      let month = String(date.getMonth() + 1).padStart(2, '0');
+      let day = String(date.getDate()).padStart(2, '0');
+      date = year + '-' + month + '-' + day;
+      setCurrentDate(date);
+      console.log(currentDate);
+    }
+
+    //this will be used to save the done exercise to the database
+    async function saveDoneEx(){
+      try{
+        await addNewDoneEx(workoutID, reps, sets, currentDate)
+      }catch(err){
+        console.log(err)
+      }
+    }
   
     const handleWorkoutAdd = () =>{
       setWorkoutList([...workoutList, {workoutForm:""}])
@@ -20,7 +49,8 @@ export const HomeScreen=(props)=>{
       setWorkoutList(workoutList=>workoutList.filter((workoutForm, id)=>id!=index));    
     }
   
-    const workoutInputHandler = (type) => {
+    const workoutInputHandler = (type,index) => {
+      setWID(index)
       setWorkout(type);
       setModalVisible(false);
     };
@@ -40,32 +70,32 @@ export const HomeScreen=(props)=>{
     const hideChooseExModal=()=>{
       setModalVisible(false);
     } 
-  //
-    return (
-      <View style={styles.container}>
-        <ChooseExTypeModal visibility={modalVisible} workoutType={workoutInputHandler} closeModal={hideChooseExModal}/>
 
-        <Button onPress={handleWorkoutAdd} title="Tämän päivän harjoitus"/>
-        <ScrollView contentContainerStyle={styles.scrollviewwidthstyle} style={styles.scrollviewstyle}>
-          {workoutList.map((workoutForm,index) => (
-            <View key={index} style={styles.todaysworkout}>
-            <Text>Tämän päivän treeni</Text>
-            <TextInput style={styles.textinput} value={workout} onFocus={chooseExModal} placeholder="Harjoitus" />
-            <TextInput style={styles.textinput} value={workoutForm.reps} onChange={repsInputHandler} placeholder="Toistot" />
-            <TextInput style={styles.textinput} value={workoutForm.sets} onChange={setsInputHandler} placeholder="Setit" />
-              <View style={styles.inputstyle}>
-                <View style={styles.buttonstyle}>
-                  <Button title={"Cancel "+index} onPress={()=> handleWorkoutRemove(index)}/>
-                </View>
-                <View style={styles.buttonstyle}>
-                  <Button title="Lisää" />
-                </View>
+  return (
+    <View style={styles.container}>
+      <ChooseExTypeModal visibility={modalVisible} workoutType={workoutInputHandler} closeModal={hideChooseExModal}/>
+
+      <Button onPress={handleWorkoutAdd} title="Tämän päivän harjoitus"/>
+      <ScrollView contentContainerStyle={styles.scrollviewwidthstyle} style={styles.scrollviewstyle}>
+        {workoutList.map((workoutForm,index) => (
+          <View key={index} style={styles.todaysworkout}>
+          <Text>Tämän päivän treeni</Text>
+          <TextInput style={styles.textinput} value={workout} onFocus={chooseExModal} placeholder="Harjoitus" />
+          <TextInput style={styles.textinput} value={workoutForm.reps} onChange={repsInputHandler} placeholder="Toistot" />
+          <TextInput style={styles.textinput} value={workoutForm.sets} onChange={setsInputHandler} placeholder="Setit" />
+            <View style={styles.inputstyle}>
+              <View style={styles.buttonstyle}>
+                <Button title={"Cancel "+index} onPress={()=> handleWorkoutRemove(index)}/>
+              </View>
+              <View style={styles.buttonstyle}>
+                <Button title="Lisää" onPress={()=>saveDoneEx()}/>
               </View>
             </View>
-          ))}
-        </ScrollView>
-      </View>
-    );
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
 
 }
 
