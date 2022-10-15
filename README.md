@@ -14,5 +14,6 @@ In order to run this app you need to make the following installations:
 10. npm install react-native-ionicons@^4.x
 11. npm install react-native-linear-gradient --save
 12. npm install --save react-native-calendars
+13. npm install --save react-native-indicators
 
 Moro!!!

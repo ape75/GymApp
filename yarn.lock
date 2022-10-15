@@ -5467,26 +5467,7 @@
   dependencies:
     "minimist" "^1.2.6"
 
-
-"moment-jalaali@^0.9.2":
-  "integrity" "sha512-v8wXjQplvk5ez+sUqgsWIrafwIf1BEXXvzTYwsg1wHcqh27nSgKPCJ6FnZRrCz03MoNyB9N31L0oms+vE8Rq7g=="
-  "resolved" "https://registry.npmjs.org/moment-jalaali/-/moment-jalaali-0.9.6.tgz"
-  "version" "0.9.6"
-  dependencies:
-    "jalaali-js" "^1.1.0"
-    "moment" "^2.22.2"
-    "moment-timezone" "^0.5.21"
-    "rimraf" "^3.0.2"
-
-"moment-timezone@^0.5.21":
-  "integrity" "sha512-uEDzDNFhfaywRl+vwXxffjjq1q0Vzr+fcQpQ1bU0kbzorfS7zVtZnCnGc8mhWmF39d4g4YriF6kwA75mJKE/Zg=="
-  "resolved" "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.37.tgz"
-  "version" "0.5.37"
-  dependencies:
-    "moment" ">= 2.9.0"
-
-"moment@^2.22.2", "moment@^2.24.0", "moment@>= 2.9.0":
-
+"moment@^2.24.0":
   "integrity" "sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w=="
   "resolved" "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
   "version" "2.29.4"
@@ -6187,6 +6168,13 @@
   "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.70.3.tgz"
   "version" "0.70.3"
 
+"react-native-indicators@^0.17.0":
+  "integrity" "sha512-s23em477GHGxWeGczWrixScAZD6tQU4mx1fttlrwhEGKOxhBgp55Kh3RoD9Wj4yna4e5W35xQNoPqoJAT6QW5A=="
+  "resolved" "https://registry.npmjs.org/react-native-indicators/-/react-native-indicators-0.17.0.tgz"
+  "version" "0.17.0"
+  dependencies:
+    "prop-types" "^15.5.10"
+
 "react-native-ionicons@^4.6.5":
   "integrity" "sha512-s2Ia7M5t609LE9LWygMj3ALVPUlKhK7R9XcMb67fP4EYJv0oLcwg5pc+8ftv9XXaUuTW/WgL3zJlBYxAvtvMJg=="
   "resolved" "https://registry.npmjs.org/react-native-ionicons/-/react-native-ionicons-4.6.5.tgz"
@@ -6255,9 +6243,7 @@
     "prop-types" "^15.7.2"
     "yargs" "^16.1.1"
 
-
-"react-native@*", "react-native@>= 0.30.0", "react-native@>=0.14.0", "react-native@>=0.42.0", "react-native@>=0.59", "react-native@0.70.1":
-
+"react-native@*", "react-native@>= 0.30.0", "react-native@>=0.14.0", "react-native@>=0.42.0", "react-native@0.70.1":
   "integrity" "sha512-AUh4NZLFdvyjSiYWCtTROCrC7loxeeZ/TzBnkZwp3kb9XmMu7/kzvWn2c5sEMnzW7X/0JSul8jXexGVdpnCoSA=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.70.1.tgz"
   "version" "0.70.1"
