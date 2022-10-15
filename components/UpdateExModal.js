@@ -5,7 +5,7 @@ import {fetchAllExById} from '../database/db';
 import LinearGradient from 'react-native-linear-gradient';
 
 
-const ExModal = (props) => {
+const UpdateExModal = (props) => {
     const [exName, setExName]=useState();
     const [exId, setExId]=useState();
     const [exDate, setExDate]=useState();
@@ -34,7 +34,9 @@ const ExModal = (props) => {
         props.updateEx(exId, exReps, exSets, exDate);    
     }
     
-    const clearInput=()=>{       
+    const cancelUpdate=()=>{ 
+        setExReps(props.exToUpdate.reps.toString());
+        setExSets(props.exToUpdate.sets.toString());
         props.closeModal();
     } 
 
@@ -145,7 +147,7 @@ const ExModal = (props) => {
                         />
                         <AppButton 
                             title="peruuta" 
-                            onPress={clearInput}
+                            onPress={cancelUpdate}
                             backgroundColor="crimson" 
                             fontColor="ivory" 
                             iconName="arrow-left-circle"
@@ -275,4 +277,4 @@ const styles = StyleSheet.create({
     },     
   });
 
-export default ExModal;
+export default UpdateExModal;
