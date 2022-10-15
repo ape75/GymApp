@@ -7,6 +7,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {Avatar} from 'react-native-paper';
 import {useIsFocused} from '@react-navigation/native';
 import {SkypeIndicator} from 'react-native-indicators';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -46,7 +47,8 @@ export const CalendarScreen=()=>{
     const [days, setDays] = useState(new Object);
     const [oldDay, setOldDay] = useState("");    
 
-    const [isFetching, setIsFetching] = useState(false);    
+    const [isFetching, setIsFetching] = useState(false);      
+    const [renderEmpty, setRenderEmpty] = useState(false);
 
     const isFocused = useIsFocused();
 
@@ -59,7 +61,8 @@ export const CalendarScreen=()=>{
         if (isFocused) {            
             setExList([]);
             readAllExDoneDays();
-            setTextdDate("");
+            setRenderEmpty(false);
+            setSelectedDate(setToday());
         }
       }, [isFocused]);     
     
@@ -129,7 +132,7 @@ export const CalendarScreen=()=>{
                 </LinearGradient>
             );
         }
-        else if(exList.length===0 && textDate) {
+        else if(exList.length===0 && renderEmpty) {
             return(
                 <LinearGradient 
                     start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
@@ -328,6 +331,7 @@ export const CalendarScreen=()=>{
             }
             setOldDay(today);
             setDays(exDaysObject);
+            setTextdDate(today);
                      
       }
       catch(err){
@@ -345,7 +349,13 @@ export const CalendarScreen=()=>{
         try{                           
             setIsFetching(fetching);                             
             const dbResult = await fetchExByDay(date);               
-            setExList(dbResult);       
+            setExList(dbResult);
+            if(dbResult.length===0){
+                setRenderEmpty(true);
+            }
+            else{
+                setRenderEmpty(false);
+            }      
             setTextdDate(date);
             setIsFetching(false);        
         }
@@ -374,8 +384,7 @@ export const CalendarScreen=()=>{
     
     //this function calls deleteEx -function from db.js which deletes the item with the specific id from the database
     async function deleteExFromDb(id){   
-        try{
-            setIsDeleting(true);
+        try{          
             await deleteEx(id);
         }
         catch(err){
