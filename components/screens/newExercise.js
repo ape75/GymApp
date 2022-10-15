@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground, FlatList, TouchableOpacity, Modal } from 'react-native';
 import {fetchExByDay, updateExById, addNewEx, fetchExerciseTypes, updateEx} from '../../database/db';
+import ShowAllExModal from '../ShowAllExModal';
 
 
 
@@ -56,9 +57,12 @@ export const NewExercise=()=>{
     const renderItem=({item, index})=>{
 
     return (
-        <TouchableOpacity>          
-        <Text key={index}>{index+1}. {item.name} </Text>
-         </TouchableOpacity>
+        <View style={styles.renderStyle}>
+            <TouchableOpacity>      
+
+            <Text style={styles.listStyle} key={index}>{index+1}. {item.name} </Text>
+            </TouchableOpacity>
+         </View>
     );
 }
 
@@ -71,7 +75,7 @@ return (
 
         </View>
             <View style={styles.newWindow}>
-                <View style>
+                <View >
                     <Text>Lisää uusi harjoitus</Text>   
                 </View>
                 <TextInput style={styles.inputStyle} placeholder="Anna harjoituksen nimi..." 
@@ -83,19 +87,8 @@ return (
             
                 <Button p='2' color='#a4161a' title="Näytä kaikki" onPress={()=>readAllEx()} />
 
-                <Modal visible={visibility}>
-                    <View style={styles.listStyle}>
-                        
-                            <View style={styles.listStyle}>
-                                <Text style={styles.textStyle}>Kaikki Harjoitukset</Text>
-                                <FlatList
-                                    data={exListAll}
-                                    renderItem={renderItem}       
-                                        /> 
-                            </View>
-                        <Button style={styles.buttonStyle} title="Palaa Takaisin" onPress={closeModal} />
-                    </View>
-                </Modal>
+                <ShowAllExModal visibility={visibility} renderItem={renderItem} closeModal={closeModal} exListAll={exListAll}/>
+              
             </View>
        
   
@@ -115,6 +108,12 @@ const styles = StyleSheet.create({
     textStyle:{
         color: 'black',
     },
+    renderStyle: {
+        justifyContent:'center',
+        
+        borderColor: '#660708',
+    },
+
     newWindow: {
         flex:1,
         flexDirection: 'column',
@@ -146,7 +145,14 @@ const styles = StyleSheet.create({
         borderRadius: 7,
     },
     listStyle: {
-        flex: 1,
+        backgroundColor: '#b1a7a6',
+        borderWidth: 1,
+        borderColor: '#660708',
+        borderRadius: 7,
+        elevation: 10,
+        marginBottom: 8,
+        paddingVertical: 8,
+        paddingLeft:5,
     }
 
 });
