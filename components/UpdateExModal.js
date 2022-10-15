@@ -22,16 +22,20 @@ const UpdateExModal = (props) => {
         readEx(props.exToUpdate==undefined ? "" : props.exToUpdate.typeid);
       }, [props.exToUpdate])     
 
+    //this function handles the change in sets -input and removes every character that is not a number
     const setsInputHandler=(enteredText)=>{
-        setExSets(enteredText);    
+        let numeric = enteredText.replace(/[^0-9]/g, '');
+        setExSets(numeric);    
     }
 
     const repsInputHandler=(enteredText)=>{
-        setExReps(enteredText);    
+        let numeric = enteredText.replace(/[^0-9]/g, '');
+        setExReps(numeric);    
     }
 
-    const updateEx=()=>{
-        props.updateEx(exId, exReps, exSets, exDate);    
+    //this function calls an update -function from the calendar.js which is defined in the modal properties
+    const updateEx=()=>{        
+            props.updateEx(exId, exReps, exSets, exDate);             
     }
     
     const cancelUpdate=()=>{ 
@@ -50,7 +54,17 @@ const UpdateExModal = (props) => {
         }
         finally{
         }
-    }  
+    }
+    
+    //this function checks if the input values are empty or zero
+    const checkInput=()=>{
+        if(exReps && exSets && exReps != 0 && exSets != 0){
+            confirmation();
+        }
+        else{
+            alertEmpty();
+        }
+    }
     
     //function opens an Alert -window which asks a confirmation from the user
     const confirmation = ()=>{
@@ -62,6 +76,20 @@ const UpdateExModal = (props) => {
           [{text:'Kyllä', style:'destructive', onPress:()=>updateEx()},
           //The second button
           {text:'Peruuta', style:'default',}],
+          {
+            cancelable: true
+          }
+          );
+      }
+
+      //function opens an Alert -window which asks a confirmation from the user
+    const alertEmpty = ()=>{
+        Alert.alert(
+          "Annettu arvo ei voi olla 0 tai tyhjä!",//title - put at least this - the rest is up to you
+          'Anna uusi arvo',//Extra message
+          //There can be several buttons
+          //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
+          [{text:'Ok', style:'destructive'}],
           {
             cancelable: true
           }
@@ -140,7 +168,7 @@ const UpdateExModal = (props) => {
                     <View style={styles.buttons}>                      
                         <AppButton 
                             title="päivitä" 
-                            onPress={confirmation} 
+                            onPress={checkInput} 
                             backgroundColor="green" 
                             fontColor="ivory" 
                             iconName="update"
