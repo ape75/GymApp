@@ -32,7 +32,7 @@ const ChooseExTypeModal = (props) => {
 
     const renderItem=({item, index})=>{
         return (
-            <TouchableOpacity onPress={()=>props.workoutType(item.name)}>
+            <TouchableOpacity onPress={()=>props.workoutType(item.name,index)}>
             <Text key={index}>{item.name}</Text>
             </TouchableOpacity>
         );
