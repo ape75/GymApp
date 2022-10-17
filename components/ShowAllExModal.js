@@ -4,6 +4,7 @@ import {updateExById, fetchExerciseTypes } from '../../database/db';
 
 const ShowAllExModal = (props) => {
 
+    const [isScrollEnabled, setIsScrollEnabled] = useState(true);
 
     return(
         
@@ -13,12 +14,19 @@ const ShowAllExModal = (props) => {
                     <View style={styles.textStyle}>
                     <Text >Tallennetut Harjoitukset</Text>
                     </View>
-                        <View style={styles.listStyle}>
-                                    <FlatList
-                                        data={props.exListAll}
-                                        renderItem={props.renderItem}       
-                                            /> 
+                        <ScrollView>
+                        <View>
+                            
+                        {props.exListAll.map((item, index)=>{
+                                    return <TouchableOpacity>
+                                        <View style={styles.renderStyle} key={index}>  
+                                            <Text style={styles.listStyle}>{index+1}. {item.name} </Text>
+                                        </View>
+                                        </TouchableOpacity>    
+                                })}
                         </View>
+                        </ScrollView>
+                    
                     <Button style={styles.buttonStyle} title="Palaa Takaisin" onPress={props.closeModal} />
                 </View>
             </ImageBackground> 
@@ -66,7 +74,14 @@ const styles = StyleSheet.create({
         borderRadius: 7,
     },
     listStyle: {
-      
+        backgroundColor: '#b1a7a6',
+        borderWidth: 1,
+        borderColor: '#660708',
+        borderRadius: 7,
+        elevation: 10,
+        marginBottom: 8,
+        paddingVertical: 8,
+        paddingLeft:5,
     }
 
 });
