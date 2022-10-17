@@ -1,11 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, ImageBackground} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, ImageBackground, Dimensions} from 'react-native';
 import {fetchExDoneDays, fetchExByDay, updateExById, deleteEx} from '../../database/db';
-import ExModal from '../ExModal';
+import UpdateExModal from '../UpdateExModal';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import LinearGradient from 'react-native-linear-gradient';
 import {Avatar} from 'react-native-paper';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
+import {SkypeIndicator} from 'react-native-indicators';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 //set local (Finnish in this case) month- and day -names into Calendar -components configuration
 LocaleConfig.locales['fi'] = {
@@ -37,35 +42,39 @@ export const CalendarScreen=()=>{
     const [visibility, setVisibility]=useState(false);
     const [exList, setExList]=useState([]);
     const [exToUpdate, setExToUpdate]=useState();
-    const [updateId, setUpdateId]=useState(-1);
+    const [updateId, setUpdateId]=useState(-1);   
     
     const [days, setDays] = useState(new Object);
-    const [oldDay, setOldDay] = useState("");
+    const [oldDay, setOldDay] = useState("");    
+
+    const [isFetching, setIsFetching] = useState(false);      
+    const [renderEmpty, setRenderEmpty] = useState(false);
 
     const isFocused = useIsFocused();
+
+    
 
     let exDaysObject = {}; 
 
     //these functions are executed every time screen is loaded or screen gets focused again 
     useEffect(() => {
-        if (isFocused) {
-            readAllExDone();
+        if (isFocused) {            
             setExList([]);
-            setSelectedDate("");
+            readAllExDoneDays();
+            setRenderEmpty(false);
+            setSelectedDate(setToday());
         }
-      }, [isFocused]);
-    
-    
+      }, [isFocused]);     
     
     //this function defines the logic how dates are marked and selected in the calendar -component when a date is clicked
-    const setMarkers=(day)=>{
-        setSelectedDate(day.dateString);                 
-        let dayInObject = false;                           
+    const setMarkers=(date)=>{
+        setSelectedDate(date); 
+        let dayInObject = false;                                           
 
         //iterates through days-objects keys 
         Object.entries(days).forEach(([key]) =>{
-            //if the the selected date already exists in days-object then set both values to true and also set boolean value to trua
-            if(key === day.dateString){             
+            //if the the selected date already exists in days-object then set both values to true and also set dayInObject -boolean value to true
+            if(key === date){             
                 days[key] = {
                 selected: true,
                 marked: true
@@ -80,20 +89,20 @@ export const CalendarScreen=()=>{
                 };
             }
             //if the key equals oldDay-value then the key-value -pair is deleted, because it is not needed anymore
-            if(key === oldDay){       
+            if(key === oldDay){      
                 delete days[key];              
             }                           
         }
         );
         //if the selected date is not found as a key in the object, the selected date is added to the object with desired values 
-        if(!dayInObject){          
-            days[day.dateString] = { 
+        if(!dayInObject){       
+            days[date] = { 
                 selected: true,
                 marked: false
             };
-            setOldDay(day.dateString);                       
-        }               
-    }
+            setOldDay(date);                              
+        }        
+    }  
   
     //function returns a item to be rendered into Flatlist in the RenderList -component
     const renderItem=({item, index})=>{
@@ -103,27 +112,12 @@ export const CalendarScreen=()=>{
                 <Text style={styles.listItemStyle} key={index}>{index+1}. {item.name} / toistot {item.reps} / setit {item.sets}</Text>
             </TouchableOpacity>
         );
-      }   
-      
-      //function that implements an Alert -window if the specific date has no entries
-      const alertEmpty = (date)=>{
-        Alert.alert(
-          ""+date,//title - put at least this - the rest is up to you
-          "Ei merkintöjä annetulla päivämäärällä.",//Extra message
-          //There can be several buttons
-          //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
-          [{text:'OK', style:'destructive'}
-          ],
-          {
-            cancelable: true
-          }
-          );
-      }
-
+      }      
+   
     //component which returns a view with a FlatList of items if the exList contains any values (length is not 0)
-    //otherwise an empty View gets returned
+    //if the exList is empty and a search has been committed (textDate has been set), function returns a notification of no markings 
     const RenderList=()=>{
-        if(exList.length != 0 ){
+        if(exList.length != 0){        
             return(
                 <LinearGradient 
                     start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
@@ -136,16 +130,37 @@ export const CalendarScreen=()=>{
                         renderItem={renderItem}       
                     /> 
                 </LinearGradient>
-            );            
-        } 
-        else{
-            return(
-                <View></View>
             );
-        }            
+        }
+        else if(exList.length===0 && renderEmpty) {
+            return(
+                <LinearGradient 
+                    start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
+                    colors={['#65FDF0','#1D6FA3','#91b6d4']} 
+                    style={styles.empty}
+                >
+                    <Text style={styles.listHeading}>{textDate}</Text>
+                    <Text style={styles.listHeading}>Ei merkintöjä.</Text>
+                </LinearGradient>   
+            );
+        }      
     } 
+    
+    //this component returns text element and a spinning indicator to the screen
+    const RenderFetching=()=>{
+        return(                        
+            <LinearGradient 
+                    start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
+                    colors={['#65FDF0','#1D6FA3','#91b6d4']} 
+                    style={styles.spinner}
+            > 
+                <Text style={{color:'ivory', fontSize:24, fontWeight: 'bold', textTransform: 'capitalize', marginBottom: 10, }}>haetaan</Text>                
+                <SkypeIndicator color='ivory' size={40} count ={5} />                
+            </LinearGradient>                      
+        );
+    }
 
-    //function pops up an Alert-window to confirm the deletion of an exercise
+    //this function implemets an Alert-window to confirm the deletion of an exercise
     const confirmation = (name, id, index)=>{
         Alert.alert(
           "Harjoitus nro " +(index+1) +" (" +name+ ")" +" poistetaan!",//title - put at least this - the rest is up to you
@@ -161,17 +176,17 @@ export const CalendarScreen=()=>{
           );
       }
     
-    //function which sets the Modal visibility attribute to "true" and the modal view is opened
-    const openModal=()=>{
+    //function which sets the EditModal visibility attribute to "true" and the modal view is opened
+    const openEditModal=()=>{
         setVisibility(true);
     }
 
-     //function which sets the Modal visibility attribute to "false" and the modal view is closed
-    const closeModal=()=>{
+     //function which sets the EditModal visibility attribute to "false" and the modal view is closed
+    const closeEditModal=()=>{
         setVisibility(false);
     }
     
-    //function which gets it parameters from the modal view and calls updaExById -function if there is something to update
+    //function which gets it parameters from the UpdateExModal -view and calls updaExById -function if there is something to update
     const updateExToDb=async(id, reps, sets, date)=>{
         if(updateId!=-1){       
           await updateExById(id, reps, sets);
@@ -181,7 +196,7 @@ export const CalendarScreen=()=>{
             console.log("Nothing to update.");
         }    
         setVisibility(false); 
-        await readAllExDoneByDay(date);
+        await readAllExDoneByDay(date, false);
       }
       
       //function gets the index of the specific item as a parameter from the onPress-attribute of TouchableOpacity in renderItem -function
@@ -189,10 +204,10 @@ export const CalendarScreen=()=>{
       const updateEx=(index)=>{
         setUpdateId(index);
         setExToUpdate(exList[index]);
-        openModal();
+        openEditModal();
       }
       
-     //a custom button component made by using a TouchableOpacity-component
+     //a custom button component made with using a TouchableOpacity-component
     const AppButton = ({ onPress, title, backgroundColor, fontColor, iconName }) => (
         <TouchableOpacity 
             activeOpacity={0.6}
@@ -202,7 +217,7 @@ export const CalendarScreen=()=>{
                 backgroundColor && { backgroundColor }        
             ]}>           
         <Avatar.Icon 
-            size={28} 
+            size={32} 
             icon={iconName}
             style={{backgroundColor:'transparent', fontWeight:'bold'}} 
         />
@@ -215,11 +230,11 @@ export const CalendarScreen=()=>{
     return (       
         <ImageBackground source={require('../../assets/images/background.jpg')}
             style={styles.imageBackground} resizeMode='cover'>
-            <ExModal 
+            <UpdateExModal 
                 visibility={visibility} 
                 updateEx={updateExToDb} 
                 exToUpdate={exToUpdate} 
-                closeModal={closeModal}
+                closeModal={closeEditModal}
             />               
              <Calendar
                 //set days-object as the markedDates -property      
@@ -227,7 +242,8 @@ export const CalendarScreen=()=>{
                     days
                 }
                 style={{    
-                    marginVertical: 10,
+                    marginTop: 10,
+                    marginBottom: 10,
                     marginHorizontal: 15,                   
                     borderWidth: 1,
                     borderColor: 'black',
@@ -254,7 +270,7 @@ export const CalendarScreen=()=>{
                     textDayHeaderFontSize: 16
                 }} 
                 // Handler which gets executed on day press.
-                onDayPress={day => {setMarkers(day)}}       
+                onDayPress={day => {setMarkers(day.dateString)}}       
                 // Do not show days of other months in month page. Default = false
                 hideExtraDays={true}   
                 // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday
@@ -268,39 +284,34 @@ export const CalendarScreen=()=>{
                 // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
                 disableAllTouchEventsForDisabledDays={true}                                
             />    
-            <View style={styles.formStyle}>
+            <View style={styles.formStyle}>                
                 <AppButton 
                     title="hae" 
-                    onPress={() => readAllExDoneByDay(selectedDate)} 
+                    onPress={() => readAllExDoneByDay(selectedDate, true)} 
                     backgroundColor="#0066ff" 
                     fontColor="ivory"
-                    iconName="database-arrow-right"
-                />
+                    iconName="database-search"
+                /> 
                 <AppButton 
-                    title="harjoitukset tänään" 
-                    onPress={() => readTodaysExDone()} 
-                    backgroundColor="#29a329" 
-                    fontColor="ivory"
-                    iconName="calendar-today"
-                />
-            {/*     <AppButton 
-                    title="takaisin" 
-                    onPress={() => props.navigation.goBack()} 
+                    title="lisää" 
+                    onPress={() => console.log("Lisätään harjoitus päivälle: " +selectedDate)} 
                     backgroundColor="crimson" 
                     fontColor="ivory"
-                    iconName="arrow-left-circle"
-                />   */}        
+                    iconName="pencil-plus"
+                />                  
             </View>
-            <RenderList/> 
+            {/* Here is some conditional rendering. Wwhen isFetching is true RenderFetching - component gets rendered and 
+            when it is set to false RendeList -component gets rendered*/}           
+            {isFetching ? <RenderFetching/> : <RenderList/>}                    
         </ImageBackground>         
     );
     
     //function gets all the dates of exercises ever done from the database and adds them to an array
     //after that it adds dates and selected+marked values as objects to an array of objects
     //finally the created object is set as days -state variable
-    async function readAllExDone(){
+    async function readAllExDoneDays(){
         try{
-            const dbResult = await fetchExDoneDays();            
+            const dbResult = await fetchExDoneDays();      
             const exDays = [];   
             dbResult.forEach((item) => {
                 exDays.push(item.date);
@@ -311,7 +322,17 @@ export const CalendarScreen=()=>{
                     marked: true
                 };
             });
-            setDays(exDaysObject);         
+            //here the current date is set as selected in the exDaysObject
+            let today= setToday();
+            console.log("Today is :" +today);
+            exDaysObject[today] = {
+                selected: true,
+                marked: false
+            }
+            setOldDay(today);
+            setDays(exDaysObject);
+            setTextdDate(today);
+                     
       }
       catch(err){
         console.log("Error: "+err);
@@ -321,75 +342,96 @@ export const CalendarScreen=()=>{
       }
 
     //this function calls the fetchExByDay -function from db.js and sets the return value to the ExList -state variable
-    //it also sets the RenderList state variable to "true", so the list is rendered to the screen
-    //if the list is empty it calls the alertEmpty -function => RenderList is set to "false" and the list is not rendered
-    async function readAllExDoneByDay(date){
-        try{
-        const dbResult = await fetchExByDay(date);        
-        if(dbResult.length===0){
-            alertEmpty(date);
-        }        
-        setExList(dbResult);
-        setTextdDate(date);        
+    //it also sets the isFetching state variable to "true" or "false" depending on the fetching -parameter given
+    //if it is set to true, then while the data is fetched from the database and an indicator is rendered to the screen
+    //when isFetching is set to false, only results are rendered
+    async function readAllExDoneByDay(date, fetching){
+        try{                           
+            setIsFetching(fetching);                             
+            const dbResult = await fetchExByDay(date);               
+            setExList(dbResult);
+            if(dbResult.length===0){
+                setRenderEmpty(true);
+            }
+            else{
+                setRenderEmpty(false);
+            }      
+            setTextdDate(date);
+            setIsFetching(false);        
         }
         catch(err){
-            console.log("Error: "+err);
+            console.log("Error: "+err);           
         }
         finally{
         }
     }  
 
-    //this function reads the current date and converts it to a string in format (YYYY/MM/DD)
-    //then it calls a function to read todays done exercises from the database (if any exist) 
-    async function readTodaysExDone(){
-        try{        
-            let today = new Date();
-            let year = today.getFullYear();
-            let month = today.getMonth()+1; //getMonth() returns a month as a number between 0-11, thats why 1 is added
-            let day = today.getDate();
-            if (month < 10){
-                month = '0' + month;
-            }          
-            if (day < 10) {
-                day = '0' + day;
-            }           
-            let result = [year, month, day].join('-');
-            readAllExDoneByDay(result);
-        }
-        catch(err){
-            console.log("Error: "+err);
-        }
-        finally{
-        }
+    //this function reads the current date and returns it as a string in format (YYYY-MM-DD)
+    function setToday(){                
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = today.getMonth()+1; //getMonth() returns a month as a number between 0-11, thats why 1 is added
+        let day = today.getDate();
+        if (month < 10){
+            month = '0' + month;
+        }          
+        if (day < 10) {
+            day = '0' + day;
+        }           
+        let result = [year, month, day].join('-');
+        return result;    
     }
     
     //this function calls deleteEx -function from db.js which deletes the item with the specific id from the database
     async function deleteExFromDb(id){   
-        try{
-          await deleteEx(id);
+        try{          
+            await deleteEx(id);
         }
         catch(err){
           console.log(err);
         }
         finally{     
         }
-        await readAllExDoneByDay(textDate);
+        await readAllExDoneByDay(textDate, false);
       }
 };
 
-
   const styles = StyleSheet.create({    
+    spinner:{
+        position: "absolute",
+        top: (windowHeight/2)-100,
+        left: (windowWidth/2)-110,
+        width: 220,       
+        justifyContent: "center",
+        alignItems: "center",     
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: 'ivory',
+        paddingVertical: 40,
+        paddingHorizontal: 30,       
+    },    
     listStyle:{
         flex: 1,
         width: '93%',
         alignSelf: 'center',        
         marginVertical: 10,
-        backgroundColor: '#f0f0f5',
         padding: 10,        
         borderRadius: 8,
-        borderColor: 'black',
-        borderWidth: 1,
+        borderColor: 'ivory',
+        borderWidth: 2,
         elevation: 10,
+    },
+    empty:{
+        display: 'flex',
+        justifyContent: "center",
+        alignSelf: 'center',
+        alignItems: 'center',         
+        marginTop: 30,
+        paddingHorizontal: 30,
+        paddingVertical: 20,        
+        borderRadius: 8,
+        borderColor: 'ivory',
+        borderWidth: 2,
     },
     listHeading:{
         alignSelf: 'center',
@@ -406,7 +448,7 @@ export const CalendarScreen=()=>{
         margin: 2,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: 'black',
+        borderColor: 'ivory',
         color: 'ivory',
         fontWeight: 'bold',
     },
@@ -414,7 +456,7 @@ export const CalendarScreen=()=>{
         display: 'flex',
         flexDirection: 'row',
         alignSelf: 'center',
-    },    
+    },     
     calendarStyle:{
         borderRadius: 8 ,
         borderColor: 'black',
@@ -433,10 +475,10 @@ export const CalendarScreen=()=>{
         backgroundColor: "#009688",
         borderRadius: 20,
         borderColor: 'ivory',
-        borderWidth: 1,
-        paddingVertical: 3,
+        borderWidth: 2,
+        paddingVertical: 2,
         paddingHorizontal: 10,
-        marginRight: 10,      
+        marginHorizontal: 10,      
     },
     appButtonText: {
         fontSize: 14,
