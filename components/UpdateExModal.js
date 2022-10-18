@@ -22,7 +22,7 @@ const UpdateExModal = (props) => {
         readEx(props.exToUpdate==undefined ? "" : props.exToUpdate.typeid);
       }, [props.exToUpdate])     
 
-    //this function handles the change in sets -input and removes every character that is not a number
+    /* this function handles the change in sets -input and removes every character that is not a number */
     const setsInputHandler=(enteredText)=>{
         let numeric = enteredText.replace(/[^0-9]/g, '');
         setExSets(numeric);    
@@ -33,17 +33,19 @@ const UpdateExModal = (props) => {
         setExReps(numeric);    
     }
 
-    //this function calls an update -function from the calendar.js which is defined in the modal properties
+   /*  this function calls an update -function from the calendar.js which is defined in the modal properties */
     const updateEx=()=>{        
             props.updateEx(exId, exReps, exSets, exDate);             
     }
     
+    /* if the update is canceled, reps and sets are set empty and the modal view is closed */
     const cancelUpdate=()=>{ 
-        setExReps(props.exToUpdate.reps.toString());
-        setExSets(props.exToUpdate.sets.toString());
+        setExReps("");
+        setExSets("");
         props.closeModal();
     } 
 
+    /* function gets a list of top5 done exercises (reps*sets) in descending order and sets it as a state variable */
     async function readEx(id){
         try{
         const dbResult = await fetchAllExById(id);            
@@ -56,7 +58,7 @@ const UpdateExModal = (props) => {
         }
     }
     
-    //this function checks if the input values are empty or zero
+    /* this function checks if the input values are empty or zero */
     const checkInput=()=>{
         if(exReps && exSets && exReps != 0 && exSets != 0){
             confirmation();
@@ -66,15 +68,12 @@ const UpdateExModal = (props) => {
         }
     }
     
-    //function opens an Alert -window which asks a confirmation from the user
+    /* function opens an Alert -window which asks a confirmation from the user */
     const confirmation = ()=>{
         Alert.alert(
-          "Päivitetään harjoituksen tiedot.",//title - put at least this - the rest is up to you
-          'Oletko varma?',//Extra message
-          //There can be several buttons
-          //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
+          "Päivitetään harjoituksen tiedot.",
+          'Oletko varma?',
           [{text:'Kyllä', style:'destructive', onPress:()=>updateEx()},
-          //The second button
           {text:'Peruuta', style:'default',}],
           {
             cancelable: true
@@ -82,13 +81,11 @@ const UpdateExModal = (props) => {
           );
       }
 
-      //function opens an Alert -window which asks a confirmation from the user
+    /* function opens an Alert -window which asks a confirmation from the user */
     const alertEmpty = ()=>{
         Alert.alert(
-          "Annettu arvo ei voi olla 0 tai tyhjä!",//title - put at least this - the rest is up to you
-          'Anna uusi arvo',//Extra message
-          //There can be several buttons
-          //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
+          "Annettu arvo ei voi olla 0 tai tyhjä!",
+          'Anna uusi arvo',
           [{text:'Ok', style:'destructive'}],
           {
             cancelable: true
@@ -96,7 +93,7 @@ const UpdateExModal = (props) => {
           );
       }
 
-    //a custom button component made by using a TouchableOpacity-component
+    /* a custom button component made by using a TouchableOpacity-component */
     const AppButton = ({ onPress, title, backgroundColor, fontColor, iconName }) => (
     <TouchableOpacity 
         activeOpacity={0.6}
@@ -132,8 +129,8 @@ const UpdateExModal = (props) => {
             <ImageBackground source={require('../assets/images/background.jpg')}
                 style={styles.imageBackground} resizeMode='cover'>
                 <LinearGradient 
-                    start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
-                    colors={['#D3CCE3','#E9E4F0','ivory']}
+                   start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
+                   colors={['#65FDF0','#1D6FA3','#91b6d4']}
                     style={styles.container}
                 >
                     <Surface style={styles.surface} elevation={5}>
@@ -141,29 +138,33 @@ const UpdateExModal = (props) => {
                         <Text style={styles.heading}>{exName}</Text>
                     </Surface>                      
                     <View style={styles.formstyle}>
-                        <TextInput
-                            left={<TextInput.Icon icon="repeat" />}
-                            keyboardType='numeric'
-                            mode="outlined" 
-                            label="Toistot" 
-                            value={exReps} 
-                            style={styles.textinput} 
-                            onChangeText={repsInputHandler}
-                            activeOutlineColor="black"
-                            outlineColor='black'
-                            selectionColor='black'
-                        />    
-                        <TextInput
-                            left={<TextInput.Icon icon="weight-lifter" />}
-                            keyboardType='numeric'
-                            mode="outlined"   
-                            label="Setit" 
-                            value={exSets} 
-                            style={styles.textinput} 
-                            onChangeText={setsInputHandler}
-                            activeOutlineColor="black"
-                            outlineColor='black'
-                        />                        
+                        <View style={styles.textinputBackground}>
+                            <TextInput
+                                left={<TextInput.Icon icon="repeat" />}
+                                keyboardType='numeric'
+                                mode="outlined" 
+                                label="Toistot" 
+                                value={exReps} 
+                                style={styles.textinput} 
+                                onChangeText={repsInputHandler}
+                                activeOutlineColor="black"
+                                outlineColor='black'
+                                selectionColor='black'
+                            /> 
+                        </View>
+                        <View style={styles.textinputBackground}>   
+                            <TextInput
+                                left={<TextInput.Icon icon="weight-lifter" />}
+                                keyboardType='numeric'
+                                mode="outlined"   
+                                label="Setit" 
+                                value={exSets} 
+                                style={styles.textinput} 
+                                onChangeText={setsInputHandler}
+                                activeOutlineColor="black"
+                                outlineColor='black'
+                            /> 
+                        </View>                       
                     </View>
                     <View style={styles.buttons}>                      
                         <AppButton 
@@ -185,7 +186,7 @@ const UpdateExModal = (props) => {
                 </LinearGradient> 
                 <LinearGradient 
                     start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
-                    colors={['#D3CCE3','#E9E4F0','ivory']}
+                    colors={['#65FDF0','#1D6FA3','#91b6d4']}
                     style={styles.linearGradient}
                     >                  
                         <Text style={styles.listHeading}>TOP 5</Text>
@@ -218,17 +219,27 @@ const styles = StyleSheet.create({
     },
     heading:{
         alignSelf: 'center',
-        color: 'black',
+        color: 'ivory',
         fontSize: 20,
         fontWeight: 'bold',
         textTransform: 'uppercase',
     },
     textinput:{
         backgroundColor: '#f6f6f6',
-        width: '45%',
+        width: '100%',
         color: 'ivory',
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    textinputBackground:{
+        paddingTop: 1,
+        paddingBottom: 6,
+        paddingHorizontal: 6,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: 'black',
+        width: '45%',
+        backgroundColor: '#edf3f8',
     },
     formstyle:{
         width:'95%',
@@ -236,7 +247,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'space-around',
         marginBottom: 20,
-        marginTop: 10,
+        marginTop: 20,
         paddingLeft: 10,
         paddingRight: 10,
     },
@@ -251,8 +262,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: "#009688",
         borderRadius: 20,
-        borderColor: 'black',
-        borderWidth: 1,
+        borderColor: 'ivory',
+        borderWidth: 2,
         paddingVertical: 3,
         paddingHorizontal: 10,
         marginRight: 10,      
@@ -270,10 +281,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f6f6f6',
+        backgroundColor: 'steelblue',
         borderRadius: 8,
-        borderColor: 'black',
-        borderWidth: 1,        
+        borderColor: 'ivory',
+        borderWidth: 2,        
     },      
     linearGradient: {       
         flex: 1, 
@@ -286,7 +297,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
     },
     listHeading:{
-        color: 'crimson',
+        color: 'ivory',
         fontSize: 26,
         fontWeight: '800',
         marginBottom: 10,
@@ -298,9 +309,9 @@ const styles = StyleSheet.create({
         paddingVertical: 2,
         paddingHorizontal: 4,
         marginBottom: 5,
-        backgroundColor: 'steelblue',
+        backgroundColor: 'green',
         borderWidth: 1,
-        borderColor: 'black',
+        borderColor: 'ivory',
         borderRadius: 5,
     },     
   });
