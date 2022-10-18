@@ -294,3 +294,22 @@ export const addNewDoneEx=(workoutID, reps, sets, currentDate)=>{
     });
     return promise;
 }
+
+//this function adds a new exercise done in a specific day chosen from the calendar
+export const addNewDoneExInDay=(workoutID, reps, sets, date)=>{
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid) values(?,?,?,?);',
+            //And the values come here
+                [date, reps, sets, workoutID],
+                ()=>{
+                    resolve();
+                },
+                (_,err)=>{
+                    reject(err);
+                }
+            );
+        });
+    });
+    return promise;
+}
