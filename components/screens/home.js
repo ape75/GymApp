@@ -4,7 +4,7 @@ import {StyleSheet, TextInput, Button, ScrollView, View, Text, Image} from 'reac
 import ChooseExTypeModal from '../../components/ChooseExTypeModal';
 import {addNewDoneEx} from '../../database/db';
 
-export const HomeScreen=(props)=>{
+export const HomeScreen=()=>{
 
     const [workoutList, setWorkoutList]= useState([{workoutForm:""}]);
     const [workout, setWorkout]=useState('');
@@ -16,12 +16,14 @@ export const HomeScreen=(props)=>{
     const [modalVisible, setModalVisible]=useState(false);
     const isFocused = useIsFocused();
 
+    /*when page comes to focus, call function to get todays date*/
     useEffect(() => {
       if (isFocused){
-        {getToday()}
+        {getToday()};
       }
     }, [isFocused]);
-    //gets todays date to be used in adding done exercise 
+    
+    /*gets todays date to be used in adding done exercise*/
     function getToday(){
       let date = new Date();
       let year = new Date().getFullYear();
@@ -30,46 +32,54 @@ export const HomeScreen=(props)=>{
       date = year + '-' + month + '-' + day;
       setCurrentDate(date);
       console.log(currentDate);
-    }
+    };
 
-    //this will be used to save the done exercise to the database
+    /*this saves the done exercise to the database*/
     async function saveDoneEx(){
       try{
-        await addNewDoneEx(workoutID, reps, sets, currentDate)
+        await addNewDoneEx(workoutID, reps, sets, currentDate);
       }catch(err){
-        console.log(err)
+        console.log(err);
       }
-    }
+    };
   
+    /*this creates a new workout form to the workout list, 
+    until I can figure out how to get unique workoutForm.workout value to each form this is useless*/
     const handleWorkoutAdd = () =>{
-      setWorkoutList([...workoutList, {workoutForm:""}])
-    }
-    //jostain syystä tämä poistaa aina listan viimeisen formin (todo) korjaa
+      setWorkoutList([...workoutList, {workoutForm:""}]);
+    };
+
+    /*TODO jostain syystä tämä poistaa aina listan viimeisen formin, korjaa*/
     const handleWorkoutRemove = (index) => {
       setWorkoutList(workoutList=>workoutList.filter((workoutForm, id)=>id!=index));    
-    }
+    };
   
+    /*used by ChooseExTypeModal to set workout info to variables*/
     const workoutInputHandler = (type,index) => {
       setWID(index)
       setWorkout(type);
       setModalVisible(false);
     };
   
+    /*TODO letter removal doesn't work*/
     const repsInputHandler = (val) => {
-      setReps(val);
+      let numeric = val.replace(/[^0-9]/g, '');
+      setReps(numeric);
     };
   
+    //TODO letter removal doesn't work
     const setsInputHandler = (val) => {
-      setSets(val);
+      let numeric = val.replace(/[^0-9]/g, '');
+      setSets(numeric);
     };
 
     const chooseExModal=()=>{
       setModalVisible(true);
-    }
+    };
 
     const hideChooseExModal=()=>{
       setModalVisible(false);
-    } 
+    };
 
   return (
     <View style={styles.container}>
@@ -81,8 +91,8 @@ export const HomeScreen=(props)=>{
           <View key={index} style={styles.todaysworkout}>
           <Text>Tämän päivän treeni</Text>
           <TextInput style={styles.textinput} value={workout} onFocus={chooseExModal} placeholder="Harjoitus" />
-          <TextInput style={styles.textinput} value={workoutForm.reps} onChange={repsInputHandler} placeholder="Toistot" />
-          <TextInput style={styles.textinput} value={workoutForm.sets} onChange={setsInputHandler} placeholder="Setit" />
+          <TextInput keyboardType='numeric' style={styles.textinput} value={workoutForm.reps} onChangeText={repsInputHandler} placeholder="Toistot" />
+          <TextInput keyboardType='numeric' style={styles.textinput} value={workoutForm.sets} onChangeText={setsInputHandler} placeholder="Setit" />
             <View style={styles.inputstyle}>
               <View style={styles.buttonstyle}>
                 <Button title={"Cancel "+index} onPress={()=> handleWorkoutRemove(index)}/>
