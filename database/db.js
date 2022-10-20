@@ -280,9 +280,28 @@ add their new finished exercise to the done exercise list*/
 export const addNewDoneEx=(workoutID, reps, sets, currentDate)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
-            tx.executeSql('insert into '+tableName2+' (id, date, reps, sets, typeid) values(?,?,?,?,?);',
+            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid) values(?,?,?,?);',
             //And the values come here
-                [id, currentDate, reps, sets, workoutID],
+                [currentDate, reps, sets, workoutID],
+                ()=>{
+                    resolve();
+                },
+                (_,err)=>{
+                    reject(err);
+                }
+            );
+        });
+    });
+    return promise;
+}
+
+//this function adds a new exercise done in a specific day chosen from the calendar
+export const addNewDoneExInDay=(workoutID, reps, sets, date)=>{
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid) values(?,?,?,?);',
+            //And the values come here
+                [date, reps, sets, workoutID],
                 ()=>{
                     resolve();
                 },
