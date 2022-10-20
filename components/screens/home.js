@@ -1,8 +1,10 @@
 import {useIsFocused} from '@react-navigation/native';
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, TextInput, TouchableOpacity, ScrollView, View, Text, ImageBackground} from 'react-native';
+import {StyleSheet, TextInput, TouchableOpacity, ScrollView, View, Text, ImageBackground, Alert} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import ChooseExTypeModal from '../../components/ChooseExTypeModal';
 import {addNewDoneEx} from '../../database/db';
+
 
 export const HomeScreen=()=>{
 
@@ -13,6 +15,7 @@ export const HomeScreen=()=>{
   const [sets, setSets]=useState('');
   const [currentDate, setCurrentDate] = useState('');
 
+  const [showAddingBox, setAddingVisible]=useState(false);
   const [modalVisible, setModalVisible]=useState(false);
   const isFocused = useIsFocused();
 
@@ -40,7 +43,33 @@ export const HomeScreen=()=>{
       await addNewDoneEx(workoutID, reps, sets, currentDate);
     }catch(err){
       console.log(err);
+      Alert.alert(
+        'Virhe',
+        'Virhe tietoja tallentaessa',
+        {cancelable: false},
+      );
+    }finally{
+      setWorkout('');
+      setWID(null);
+      setReps('');
+      setSets('');
+      setAddingVisible(true);
+      setTimeout(()=>{
+        setAddingVisible(false);
+      },3000);
     }
+  };
+
+  /*This is the popup box that will be rendered when a new exercise is added to the database*/
+  const RenderAdding=()=>{
+    return(
+      <LinearGradient
+        start={{x: 1, y: 1}} end={{x: 0, y: 0}}
+        colors={['#65FDF0','#1D6FA3','#91b6d4']}
+        style={styles.alertBoxStyle}> 
+        <Text style={{color:'ivory', fontSize:20, alignSelf:'center',}}>Harjoitus lisätty.</Text>               
+      </LinearGradient>
+    );
   };
 
   /*this creates a new workout form to the workout list, 
@@ -55,8 +84,8 @@ export const HomeScreen=()=>{
   };
 
   /*used by ChooseExTypeModal to set workout info to variables*/
-  const workoutInputHandler = (type,index) => {
-    setWID(index);
+  const workoutInputHandler = (type,id) => {
+    setWID(id);
     setWorkout(type);
     setModalVisible(false);
   };
@@ -92,7 +121,6 @@ export const HomeScreen=()=>{
 
   return (
     <ImageBackground source={require('../../assets/images/background.jpg')} style={styles.imageBackground} resizeMode='cover'>
-      <View style={styles.container}>
         <ChooseExTypeModal visibility={modalVisible} workoutType={workoutInputHandler} closeModal={hideChooseExModal}/>
         <AppButton onPress={handleWorkoutAdd} title="Lisää harjoitus" backgroundColor="limegreen"/>
         <ScrollView contentContainerStyle={styles.scrollviewwidthstyle} style={styles.scrollviewstyle}>
@@ -100,8 +128,8 @@ export const HomeScreen=()=>{
             <View key={index} style={styles.todaysworkout}>
             <Text>Tämän päivän treeni</Text>
             <TextInput style={styles.textinput} value={workout} onFocus={chooseExModal} placeholder="Harjoitus" />
-            <TextInput keyboardType='numeric' style={styles.textinput} value={workoutForm.reps} onChangeText={repsInputHandler} placeholder="Toistot" />
-            <TextInput keyboardType='numeric' style={styles.textinput} value={workoutForm.sets} onChangeText={setsInputHandler} placeholder="Setit" />
+            <TextInput keyboardType='numeric' style={styles.textinput} value={reps} onChangeText={repsInputHandler} placeholder="Toistot" />
+            <TextInput keyboardType='numeric' style={styles.textinput} value={sets} onChangeText={setsInputHandler} placeholder="Setit" />
               <View style={styles.inputstyle}>
                   <AppButton title={"Peruuta "+index} onPress={()=> handleWorkoutRemove(index)}/>
                   <AppButton title="Tallenna" onPress={()=>saveDoneEx()} backgroundColor="limegreen"/>
@@ -109,18 +137,15 @@ export const HomeScreen=()=>{
             </View>
           ))}
         </ScrollView>
-      </View>
+      {showAddingBox ? <RenderAdding/> : null}
     </ImageBackground>
   );
-
-}
+};
 
 const styles = StyleSheet.create({
   imageBackground:{
     flex: 1,
     padding: 3,
-  },
-  container: {
     alignItems: 'center',
   },
   scrollviewwidthstyle:{
@@ -165,4 +190,15 @@ const styles = StyleSheet.create({
     color: 'ivory',
     alignSelf: 'center',
   },
+  alertBoxStyle:{
+    position: 'absolute',
+    top: 200,
+    width: 220,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'ivory',
+    padding: 30,
+},
 });
