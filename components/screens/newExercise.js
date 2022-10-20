@@ -59,7 +59,6 @@ export const NewExercise=()=>{
     return (
         <View style={styles.renderStyle}>
             <TouchableOpacity>      
-
             <Text style={styles.listStyle} key={index}>{index+1}. {item.name} </Text>
             </TouchableOpacity>
          </View>
