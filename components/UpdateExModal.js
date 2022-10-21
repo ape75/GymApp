@@ -1,6 +1,6 @@
 import React, { useEffect,useState } from 'react';
 import {StyleSheet, Text, View, Modal, ImageBackground, TouchableOpacity, Alert, FlatList} from 'react-native';
-import { TextInput, Avatar, Surface} from 'react-native-paper';  
+import { TextInput, Avatar, Surface, RadioButton} from 'react-native-paper';  
 import {fetchAllExById} from '../database/db';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -11,7 +11,9 @@ const UpdateExModal = (props) => {
     const [exDate, setExDate]=useState();
     const [exReps, setExReps]=useState();
     const [exSets, setExSets]=useState();
-    const [exList, setExList]=useState([]);    
+    const [exStars, setExStars]=useState();
+    const [exList, setExList]=useState([]);
+    const [checked, setChecked] = React.useState("");    
  
     useEffect(()=>{
         setExId(props.exToUpdate==undefined ? "" : props.exToUpdate.id);
@@ -19,8 +21,13 @@ const UpdateExModal = (props) => {
         setExName(props.exToUpdate==undefined ? "" : props.exToUpdate.name);
         setExReps(props.exToUpdate==undefined ? "" : props.exToUpdate.reps.toString());
         setExSets(props.exToUpdate==undefined ? "" : props.exToUpdate.sets.toString());
+        setExStars(props.exToUpdate==null ? "" : props.exToUpdate.rating);
         readEx(props.exToUpdate==undefined ? "" : props.exToUpdate.typeid);
-      }, [props.exToUpdate])     
+      }, [props.exToUpdate]) 
+      
+      useEffect(()=>{           
+        setRadioValue(exStars);
+      }, [exStars])
 
     /* this function handles the change in sets -input and removes every character that is not a number */
     const setsInputHandler=(enteredText)=>{
@@ -35,13 +42,14 @@ const UpdateExModal = (props) => {
 
    /*  this function calls an update -function from the calendar.js which is defined in the modal properties */
     const updateEx=()=>{        
-            props.updateEx(exId, exReps, exSets, exDate);             
+            props.updateEx(exId, exReps, exSets, exDate, exStars);             
     }
     
     /* if the update is canceled, reps and sets are set empty and the modal view is closed */
     const cancelUpdate=()=>{ 
-        setExReps("");
-        setExSets("");
+        setExReps(props.exToUpdate.reps.toString());
+        setExSets(props.exToUpdate.sets.toString());
+        setExStars(props.exToUpdate.rating);
         props.closeModal();
     } 
 
@@ -91,26 +99,49 @@ const UpdateExModal = (props) => {
             cancelable: true
           }
           );
-      }
+    }
+    
+    /* function sets that radiobutton active what is defined in value-variable  */
+    const setRadioValue =(value) =>{       
+        if(value===1){
+            setChecked('first');
+        }
+        else if(value===2){
+            setChecked('second');
+        }
+        else if(value===3){
+            setChecked('third');
+        }
+        else if(value===4){
+            setChecked('fourth');
+        }
+        else if(value===5){
+            setChecked('fifth');
+        }
+        else{
+            setChecked("null");
+        }
+
+    }    
 
     /* a custom button component made by using a TouchableOpacity-component */
     const AppButton = ({ onPress, title, backgroundColor, fontColor, iconName }) => (
-    <TouchableOpacity 
-        activeOpacity={0.6}
-        onPress={onPress} 
-        style={[
-            styles.appButtonContainer,        
-            backgroundColor && { backgroundColor }        
-        ]}>           
-    <Avatar.Icon 
-        size={28} 
-        icon={iconName}
-        style={{backgroundColor:'transparent', fontWeight:'bold'}} 
-    />
-    <Text style={[styles.appButtonText, { color:fontColor }]}>
-        {title}
-    </Text>
-    </TouchableOpacity>
+        <TouchableOpacity 
+            activeOpacity={0.6}
+            onPress={onPress} 
+            style={[
+                styles.appButtonContainer,        
+                backgroundColor && { backgroundColor }        
+            ]}>           
+            <Avatar.Icon 
+                size={28} 
+                icon={iconName}
+                style={{backgroundColor:'transparent', fontWeight:'bold'}} 
+            />
+            <Text style={[styles.appButtonText, { color:fontColor }]}>
+                {title}
+            </Text>
+        </TouchableOpacity>
     ) 
 
     const renderItem=({index,item})=>{
@@ -166,6 +197,85 @@ const UpdateExModal = (props) => {
                             /> 
                         </View>                       
                     </View>
+                    <View style={styles.radioButtonBackground}>
+                        <View style={styles.radioButtonsHeader}>
+                            <Text style={{color: 'ivory', fontSize: 18, fontWeight: 'bold',}}>Arvioni treenistä:</Text>
+                        </View>
+                        <View style={styles.radioButtons}>                           
+                                <RadioButton
+                                    value="first"
+                                    status={ checked === 'first' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('first');
+                                            setExStars(1);
+                                        }
+                                    }
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <RadioButton
+                                    value="second"
+                                    status={ checked === 'second' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('second');
+                                            setExStars(2);
+                                        }
+                                    }
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <RadioButton
+                                    value="third"
+                                    status={ checked === 'third' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('third');
+                                            setExStars(3);
+                                        }
+                                    }   
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <RadioButton
+                                    value="fourth"
+                                    status={ checked === 'fourth' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('fourth');
+                                            setExStars(4);
+                                            }
+                                    }
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <RadioButton
+                                    value="fifth"
+                                    status={ checked === 'fifth' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('fifth');
+                                            setExStars(5);
+                                        }
+                                    }
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <Avatar.Icon size={46} icon="star" color="gold" 
+                                style={{backgroundColor: 'transparent', marginLeft: -10,}}/>
+                        </View>
+                        <Text style={styles.radioButtonNumbers}>1      2      3      4      5</Text>
+                        <View style={{flexDirection: 'row', alignItems: 'center',}}>
+                            <RadioButton
+                                value="null"
+                                status={ checked === 'null' ? 'checked' : 'unchecked' }
+                                onPress={() => {
+                                        setChecked('null');
+                                        setExStars("");
+                                    }
+                                }
+                                color="gold"
+                                uncheckedColor='#f6f6f6'
+                            />
+                            <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold',}}>Ei arviota</Text>
+                        </View>
+                    </View>
                     <View style={styles.buttons}>                      
                         <AppButton 
                             title="päivitä" 
@@ -179,9 +289,8 @@ const UpdateExModal = (props) => {
                             onPress={cancelUpdate}
                             backgroundColor="crimson" 
                             fontColor="ivory" 
-                            iconName="arrow-left-circle"
-                        />
-                                       
+                            iconName="cancel"
+                        />             
                     </View>                                                                                  
                 </LinearGradient> 
                 <LinearGradient 
@@ -241,6 +350,39 @@ const styles = StyleSheet.create({
         width: '45%',
         backgroundColor: '#edf3f8',
     },
+    radioButtonBackground:{
+        alignSelf: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'steelblue',
+        borderRadius: 8,
+        borderColor: 'ivory',
+        borderWidth: 2,
+        marginBottom: 20,        
+    },
+    radioButtonsHeader:{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: -5,
+        marginRight: -10,
+
+    },
+    radioButtons:{
+        flexDirection:'row',
+        alignSelf: 'center',
+        alignItems: 'center',
+    },
+    radioButtonNumbers: {
+        alignSelf: 'center',
+        color: 'black',
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginRight: 33,
+        marginTop: -10,
+    },
     formstyle:{
         width:'95%',
         flexDirection: 'row',
@@ -255,7 +397,6 @@ const styles = StyleSheet.create({
         width: '70%',
         flexDirection: 'row',
         alignSelf: 'center',
-        justifyContent: 'space-around',
     }, 
     appButtonContainer: {
         display: 'flex',
@@ -266,7 +407,8 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         paddingVertical: 3,
         paddingHorizontal: 10,
-        marginRight: 10,      
+        marginLeft: 20,
+     
     },
     appButtonText: {
         fontSize: 14,

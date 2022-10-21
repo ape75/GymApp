@@ -4,8 +4,8 @@ var db = openDatabase({ name: 'gymapp.db' }); //Open database - create if the da
 var tableName="extypes";
 var tableName2="exdone";
 
-//function returns a Promise - in the calling side .then(...).then(...)....catch(...) can be used
-//this function intializes the database into SQLite
+/* function returns a Promise
+ this function intializes the database into SQLite */
 export const init=()=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
@@ -22,14 +22,8 @@ export const init=()=>{
             (_,err)=>{
                 reject(err);
             }
-            );
-            
-            /* tx.executeSql('insert into ' +tableName+ ' (id, name, exgroup) values (?,?,?)', [1, 'Hauiskääntö käsipainoilla', 'Hauis']);
-            tx.executeSql('insert into ' +tableName+ ' (id, name, exgroup) values (?,?,?)', [2, 'Jalkaprässi', 'Pakarat']);
-            tx.executeSql('insert into ' +tableName+ ' (id, name, exgroup) values (?,?,?)', [3, 'Leuanveto', 'Selkälihas, epäkäs, hauis']);
-            tx.executeSql('insert into ' +tableName+ ' (id, name, exgroup) values (?,?,?)', [4, 'Ristikkäistalja', 'Rintalihakset']);
-            tx.executeSql('insert into ' +tableName+ ' (id, name, exgroup) values (?,?,?)', [5, 'Vatsarutistukset', 'Suorat vatsalihakset']); */
-
+            );   
+      
             tx.executeSql('insert into ' +tableName+ ' (id, name, exgroup) values (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?), (?,?,?)', 
             [   1, 'Hauiskääntö käsipainoilla', 'Hauis' ,
                 2, 'Jalkaprässi', 'Pakarat', 
@@ -49,51 +43,46 @@ export const init=()=>{
             ]);
             
             tx.executeSql('create table if not exists '+tableName2+
-            '(id integer not null primary key, date text not null, reps integer not null, sets integer not null, typeid integer not null, FOREIGN KEY(typeid) REFERENCES extypes(id));',
+            '(id integer not null primary key, date text not null, reps integer not null, sets integer not null, typeid integer not null, rating integer, FOREIGN KEY(typeid) REFERENCES extypes(id));',
             [],
             ()=>{
                 resolve();
             },(_,err)=>{
                 reject(err);
             }
-            );
+            );    
 
-            /* tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?)', [1, '2022-10-08', 20, 5, 2]);
-            tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?)', [2, '2022-10-08', 10, 10, 5]);
-            tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?)', [3, '2022-10-07', 20, 15, 4]);
-            tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values (?,?,?,?,?)', [4, '2022-10-07', 30, 20, 1]); */
-
-            tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid) values ' +
-            '(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),'+
-            '(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),'+
-            '(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?), (?,?,?,?,?),(?,?,?,?,?),'+
-            '(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),'+
-            '(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?)', 
-            [   1, '2022-10-08', 20, 5, 2,
-                2, '2022-10-08', 10, 10, 5,
-                3, '2022-10-07', 20, 15, 4,
-                4, '2022-10-07', 30, 20, 1,
-                5, '2022-10-06', 25, 12, 10,
-                6, '2022-10-06', 5, 5, 9,
-                7, '2022-10-06', 17, 5, 6,
-                8, '2022-10-19', 22, 10, 7,
-                9, '2022-10-04', 33, 1, 5,
-                10, '2022-10-04', 5, 5, 8,
-                11, '2022-10-06', 7, 8, 3,
-                12, '2022-10-06', 14, 8, 7,
-                13, '2022-10-30', 10, 10, 15,
-                14, '2022-10-09', 15, 6, 8,
-                15, '2022-10-10', 13, 6, 8,
-                16, '2022-10-20', 20, 4, 8,
-                17, '2022-10-12', 10, 8, 8,
-                18, '2022-10-13', 21, 5, 8,
-                19, '2022-10-31', 18, 7, 8,
-                20, '2022-11-10', 11, 17, 5,
-                21, '2022-10-06', 12, 20, 2,
-                22, '2022-11-02', 7, 16, 12,
-                23, '2022-12-24', 12, 20, 10,
-                24, '2022-12-06', 19, 20, 3,
-                25, '2023-01-15', 6, 6, 6,
+            tx.executeSql('insert into ' +tableName2+ ' (id, date, reps, sets, typeid, rating) values ' +
+            '(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),'+
+            '(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),'+
+            '(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?), (?,?,?,?,?,?),(?,?,?,?,?,?),'+
+            '(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),'+
+            '(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?)', 
+            [   1, '2022-10-08', 20, 5, 2, 3,
+                2, '2022-10-08', 10, 10, 5, 2,
+                3, '2022-10-07', 20, 15, 4, 2,
+                4, '2022-10-07', 30, 20, 1, null,
+                5, '2022-10-06', 25, 12, 10, 1,
+                6, '2022-10-06', 5, 5, 9, null,
+                7, '2022-10-06', 17, 5, 6, 4,
+                8, '2022-10-19', 22, 10, 7, 5,
+                9, '2022-10-04', 33, 1, 5, null,
+                10, '2022-10-04', 5, 5, 8, 3,
+                11, '2022-10-06', 7, 8, 3, 3,
+                12, '2022-10-06', 14, 8, 7, 2,
+                13, '2022-10-30', 10, 10, 15, 1,
+                14, '2022-10-09', 15, 6, 8, null,
+                15, '2022-10-10', 13, 6, 8, 5,
+                16, '2022-10-20', 20, 4, 8, 2,
+                17, '2022-10-12', 10, 8, 8, 4,
+                18, '2022-10-13', 21, 5, 8, null,
+                19, '2022-10-31', 18, 7, 8, 3,
+                20, '2022-11-10', 11, 17, 5, 3,
+                21, '2022-10-06', 12, 20, 2, 5,
+                22, '2022-11-02', 7, 16, 12, 4,
+                23, '2022-12-24', 12, 20, 10, 4,
+                24, '2022-12-06', 19, 20, 3, null,
+                25, '2023-01-15', 6, 6, 6, 2,
             ]);  
         });
              
@@ -101,7 +90,7 @@ export const init=()=>{
     return promise;
 };
 
-//function reads all the distinct dates of done excercises 
+/* function reads all the distinct dates of done excercises  */
 export const fetchExDoneDays=()=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
@@ -125,7 +114,7 @@ export const fetchExDoneDays=()=>{
 };
 
 
-//function reads all the information about all done exercises from both tables
+/* function reads all the information about all done exercises from both tables */
 export const fetchAllExDone=()=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
@@ -149,11 +138,11 @@ export const fetchAllExDone=()=>{
     return promise;
 };
 
-//function reads all the exercises done on a specific date
+/* function reads all the exercises done on a specific date */
 export const fetchExByDay=(day)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
-            tx.executeSql('select exdone.id, exdone.date, exdone.typeid, extypes.name, extypes.exgroup, exdone.reps, exdone.sets from exdone inner join extypes on extypes.id = exdone.typeid where exdone.date like ?' ,
+            tx.executeSql('select exdone.id, exdone.date, exdone.typeid, extypes.name, extypes.exgroup, exdone.reps, exdone.sets, exdone.rating from exdone inner join extypes on extypes.id = exdone.typeid where exdone.date like ?' ,
              [day],
                 (tx, result)=>{
                     let items=[];                  
@@ -173,14 +162,14 @@ export const fetchExByDay=(day)=>{
     return promise;
 };
 
-//function updates reps and sets of an exercise with the specific id 
-export const updateExById=(id, reps, sets)=>{    
+/* function updates reps, sets and rating of an exercise with the specific id  */
+export const updateExById=(id, reps, sets, rating)=>{    
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
             //Here we use the Prepared statement, just putting placeholders to the values to be inserted
-            tx.executeSql('update '+tableName2+' set reps=?, sets=? where id=?;',
+            tx.executeSql('update '+tableName2+' set reps=?, sets=?, rating=? where id=?;',
             //And the values come here
-            [reps, sets, id],
+            [reps, sets, rating, id],
             //If the transaction succeeds, this is called
             ()=>{
                     resolve();
@@ -195,7 +184,7 @@ export const updateExById=(id, reps, sets)=>{
     return promise;
 };
 
-//this function deletes an exercise with a given id from the database
+/* this function deletes an exercise with a given id from the database */
 export const deleteEx=(id)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
@@ -213,7 +202,7 @@ export const deleteEx=(id)=>{
     return promise;
 };
 
-//function reads top 5 reps*sets exercises done that have the same id
+/* function reads top 5 reps*sets exercises done that have the same exercise type id */
 export const fetchAllExById=(id)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{            
@@ -257,7 +246,7 @@ export const fetchExerciseTypes=()=>{
     return promise;
 };
 
-// This function adds a new type of exercise into the database
+/* This function adds a new type of exercise into the database */
 export const addNewEx=(newEx, newExGroup)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
@@ -295,13 +284,13 @@ export const addNewDoneEx=(workoutID, reps, sets, currentDate)=>{
     return promise;
 }
 
-//this function adds a new exercise done in a specific day chosen from the calendar
-export const addNewDoneExInDay=(workoutID, reps, sets, date)=>{
+/* this function adds a new exercise done in a specific day chosen from the calendar */
+export const addNewDoneExInDay=(workoutID, reps, sets, date, rating)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
-            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid) values(?,?,?,?);',
+            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid, rating) values(?,?,?,?,?);',
             //And the values come here
-                [date, reps, sets, workoutID],
+                [date, reps, sets, workoutID, rating],
                 ()=>{
                     resolve();
                 },
