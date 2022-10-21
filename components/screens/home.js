@@ -1,6 +1,6 @@
 import {useIsFocused} from '@react-navigation/native';
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, TextInput, TouchableOpacity, ScrollView, View, Text, ImageBackground, Alert} from 'react-native';
+import {StyleSheet, TextInput, TouchableOpacity, View, Text, ImageBackground, Alert} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ChooseExTypeModal from '../../components/ChooseExTypeModal';
 import {addNewDoneEx} from '../../database/db';
@@ -8,11 +8,10 @@ import {addNewDoneEx} from '../../database/db';
 
 export const HomeScreen=()=>{
 
-  const [workoutList, setWorkoutList]= useState([{workoutForm:""}]);
-  const [workout, setWorkout]=useState('');
-  const [workoutID, setWID]=useState('');
-  const [reps, setReps]=useState('');
-  const [sets, setSets]=useState('');
+  const [workout, setWorkout]=useState();
+  const [workoutID, setWID]=useState();
+  const [reps, setReps]=useState();
+  const [sets, setSets]=useState();
   const [currentDate, setCurrentDate] = useState('');
 
   const [showAddingBox, setAddingVisible]=useState(false);
@@ -37,6 +36,25 @@ export const HomeScreen=()=>{
     console.log(currentDate);
   };
 
+  /*called when adding new exercise, checks that all of the required values are given*/
+  const inputCheck=()=>{
+    if(workoutID && reps && sets){
+      {saveDoneEx()};
+    } else {
+      {alertEmpty()};
+    };
+  };
+  
+  /*called if any values are empty*/
+  const alertEmpty=()=>{
+    Alert.alert(
+      'Virhe',
+      'Tarkasta että, olet lisännyt harjoituksen tiedot oikein.',
+      [{text:'OK', style:'destructive'}],
+      {cancelable: false},
+    );
+  }
+
   /*this saves the done exercise to the database*/
   async function saveDoneEx(){
     try{
@@ -46,6 +64,7 @@ export const HomeScreen=()=>{
       Alert.alert(
         'Virhe',
         'Virhe tietoja tallentaessa',
+        [{text:'OK', style:'destructive'}],
         {cancelable: false},
       );
     }finally{
@@ -72,15 +91,12 @@ export const HomeScreen=()=>{
     );
   };
 
-  /*this creates a new workout form to the workout list, 
-  until I can figure out how to get unique workoutForm.workout value to each form this is useless*/
-  const handleWorkoutAdd = () =>{
-    setWorkoutList([...workoutList, {workoutForm:""}]);
-  };
-
   /*TODO jostain syystä tämä poistaa aina listan viimeisen formin, korjaa*/
-  const handleWorkoutRemove = (index) => {
-    setWorkoutList(workoutList=>workoutList.filter((workoutForm, id)=>id!=index));    
+  const handleWorkoutRemove = () => {
+    setWorkout('');
+    setWID(null);
+    setReps('');
+    setSets('');   
   };
 
   /*used by ChooseExTypeModal to set workout info to variables*/
@@ -122,21 +138,18 @@ export const HomeScreen=()=>{
   return (
     <ImageBackground source={require('../../assets/images/background.jpg')} style={styles.imageBackground} resizeMode='cover'>
         <ChooseExTypeModal visibility={modalVisible} workoutType={workoutInputHandler} closeModal={hideChooseExModal}/>
-        <AppButton onPress={handleWorkoutAdd} title="Lisää harjoitus" backgroundColor="limegreen"/>
-        <ScrollView contentContainerStyle={styles.scrollviewwidthstyle} style={styles.scrollviewstyle}>
-          {workoutList.map((workoutForm,index) => (
-            <View key={index} style={styles.todaysworkout}>
+        <View style={styles.scrollviewstyle}>
+            <View style={styles.todaysworkout}>
             <Text>Tämän päivän treeni</Text>
             <TextInput style={styles.textinput} value={workout} onFocus={chooseExModal} placeholder="Harjoitus" />
             <TextInput keyboardType='numeric' style={styles.textinput} value={reps} onChangeText={repsInputHandler} placeholder="Toistot" />
             <TextInput keyboardType='numeric' style={styles.textinput} value={sets} onChangeText={setsInputHandler} placeholder="Setit" />
               <View style={styles.inputstyle}>
-                  <AppButton title={"Peruuta "+index} onPress={()=> handleWorkoutRemove(index)}/>
-                  <AppButton title="Tallenna" onPress={()=>saveDoneEx()} backgroundColor="limegreen"/>
+                  <AppButton title="Peruuta" onPress={handleWorkoutRemove}/>
+                  <AppButton title="Tallenna" onPress={inputCheck} backgroundColor="limegreen"/>
               </View>
             </View>
-          ))}
-        </ScrollView>
+        </View>
       {showAddingBox ? <RenderAdding/> : null}
     </ImageBackground>
   );
@@ -148,10 +161,8 @@ const styles = StyleSheet.create({
     padding: 3,
     alignItems: 'center',
   },
-  scrollviewwidthstyle:{
-    alignItems:'center',
-  },
   scrollviewstyle:{
+    alignItems:'center',
     width:'90%',
   }, 
   todaysworkout: {
