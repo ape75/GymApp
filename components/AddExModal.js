@@ -1,6 +1,6 @@
 import React, { useEffect,useState } from 'react';
 import {StyleSheet, Text, View, Modal, ImageBackground, TouchableOpacity, Alert} from 'react-native';
-import { TextInput, Avatar} from 'react-native-paper';  
+import { TextInput, Avatar, RadioButton} from 'react-native-paper';  
 import {addNewDoneExInDay ,fetchExerciseTypes} from '../database/db';
 import LinearGradient from 'react-native-linear-gradient';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -13,15 +13,19 @@ const AddExModal = (props) => {
     const [exReps, setExReps]=useState();
     const [exSets, setExSets]=useState();
     const [exTypeId, setExTypeId]=useState();
+    const [exStars, setExStars]=useState();
     const [exTypeName, setExTypeName]=useState();
     const [data, setData]=useState([]);
+    const [checked, setChecked] = React.useState("");
     
     const [value, setValue] = useState(null);
 
     useEffect(()=>{        
         setExDate(props.date==undefined ? "" : props.date);
-        setExReps(props.exToUpdate==undefined ? "" : props.exToUpdate.reps.toString());
-        setExSets(props.exToUpdate==undefined ? "" : props.exToUpdate.sets.toString());
+        setExReps("");
+        setExSets("");
+        setExStars("");
+        setChecked("null");
         setExTypeName("");        
         readAllExTypes();       
       }, [props]) 
@@ -46,6 +50,7 @@ const cancelAdd=()=>{
     setExReps("");
     setExSets("");
     setExTypeName("");
+    setChecked("null");
     props.closeModal();
 } 
 
@@ -85,7 +90,7 @@ const AppButton = ({ onPress, title, backgroundColor, fontColor, iconName }) => 
           "Lisätäänkö harjoitus tietokantaan?", "(" +exTypeName +")",         
           //There can be several buttons
           //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
-          [{text:'Kyllä', style:'destructive', onPress:()=>addExToDb(exTypeId, exReps, exSets, exDate)},
+          [{text:'Kyllä', style:'destructive', onPress:()=>addExToDb(exTypeId, exReps, exSets, exDate, exStars)},
           //The second button
           {text:'Peruuta', style:'default',}],
           {
@@ -152,7 +157,7 @@ return(
                             <AntDesign style={styles.icon} color="ivory" name="Trophy" size={24} />
                         )}
                     />                   
-                </View>
+                </View>                
                     <View style={styles.repsandsets}> 
                         <View style={styles.textinputBackground}>   
                             <TextInput
@@ -183,6 +188,84 @@ return(
                         </View> 
                     </View>                                                       
                 </View>
+                <View style={styles.radioButtonBackground}>
+                        <View style={styles.radioButtonsHeader}>
+                            <Text style={{color: 'ivory', fontSize: 18, fontWeight: 'bold',}}>Arvioni treenistä:</Text>
+                        </View>
+                        <View style={styles.radioButtons}>                           
+                                <RadioButton
+                                    value="first"
+                                    status={ checked === 'first' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('first');
+                                            setExStars(1);
+                                        }
+                                    }
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <RadioButton
+                                    value="second"
+                                    status={ checked === 'second' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('second');
+                                            setExStars(2);
+                                        }
+                                    }
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <RadioButton
+                                    value="third"
+                                    status={ checked === 'third' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('third');
+                                            setExStars(3);
+                                        }
+                                    }   
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <RadioButton
+                                    value="fourth"
+                                    status={ checked === 'fourth' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('fourth');
+                                            setExStars(4);
+                                            }
+                                    }
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <RadioButton
+                                    value="fifth"
+                                    status={ checked === 'fifth' ? 'checked' : 'unchecked' }
+                                    onPress={() => {
+                                            setChecked('fifth');
+                                            setExStars(5);
+                                        }
+                                    }
+                                    color="gold"
+                                    uncheckedColor='#f6f6f6'
+                                />
+                                <Avatar.Icon size={46} icon="star" color="gold" style={{backgroundColor: 'transparent', marginLeft: -10, }}/>
+                        </View>
+                        <Text style={styles.radioButtonNumbers}>1     2      3      4      5</Text>
+                        <View style={{flexDirection: 'row', alignItems: 'center',}}>
+                            <RadioButton
+                                value="null"
+                                status={ checked === 'null' ? 'checked' : 'unchecked' }
+                                onPress={() => {
+                                        setChecked('null');
+                                        setExStars("");
+                                    }
+                                }
+                                color="gold"
+                                uncheckedColor='#f6f6f6'
+                            />
+                            <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold',}}>Ei arviota</Text>
+                        </View>
+                    </View>
                 <View style={styles.buttons}>                      
                     <AppButton 
                         title="lisää" 
@@ -206,10 +289,10 @@ return(
 );
 
  /* this function calls addDoneExInDay -function from db.js which adds the new exercise with the specific values to the database */
- async function addExToDb(typeid, exReps, exSets, exDate){
+ async function addExToDb(typeid, exReps, exSets, exDate, exRating){
     console.log(typeid); 
     try{          
-        await addNewDoneExInDay(typeid, exReps, exSets, exDate);
+        await addNewDoneExInDay(typeid, exReps, exSets, exDate ,exRating);
     }
     catch(err){
       console.log(err);
@@ -273,8 +356,40 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 5,
     },
-    textinput:{
-        
+    radioButtonBackground:{
+        alignSelf: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'steelblue',
+        borderRadius: 8,
+        borderColor: 'ivory',
+        borderWidth: 2,
+        marginBottom: 20,        
+    },
+    radioButtonsHeader:{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: -5,
+        marginRight: -10,
+
+    },
+    radioButtons:{
+        flexDirection:'row',
+        alignSelf: 'center',
+        alignItems: 'center',
+    },
+    radioButtonNumbers: {
+        alignSelf: 'center',
+        color: 'black',
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginRight: 33,
+        marginTop: -10,
+    },
+    textinput:{        
         backgroundColor: '#f6f6f6',
         fontSize: 18,
         fontWeight: 'bold',

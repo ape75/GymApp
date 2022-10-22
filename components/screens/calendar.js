@@ -9,6 +9,7 @@ import {Avatar} from 'react-native-paper';
 import {useIsFocused} from '@react-navigation/native';
 import {SkypeIndicator} from 'react-native-indicators';
 
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -61,7 +62,8 @@ export const CalendarScreen=()=>{
             setExList([]);           
             setRenderEmpty(false);
             setSelectedDate(today);
-            setMarkers(today);    
+            setMarkers(today); 
+            readAllExDoneByDay(today, false);   
         }
       }, [isFocused]);
       
@@ -107,11 +109,15 @@ export const CalendarScreen=()=>{
       }    
         /* function returns a item to be rendered into Flatlist in the RenderList -component */
         const renderItem=({item, index})=>{
-            return (
+            return (                
                 <TouchableOpacity 
-                    onPress={()=>updateEx(index)} onLongPress={()=>confirmation(item.name, item.id, index)} >          
-                    <Text style={styles.listItemStyle} key={index}>{index+1}. {item.name} / toistot {item.reps} / setit {item.sets}</Text>
-                </TouchableOpacity>
+                    onPress={()=>updateEx(index)} 
+                    onLongPress={()=>confirmation(item.name, item.id, index)} 
+                    style={styles.itemRow} 
+                >          
+                        <Text style={styles.listItemStyle} key={index}>{index+1}. {item.name} S:{item.sets} / T:{item.reps}</Text>
+                        <RatingStars count={item.rating} size={24}/>
+                </TouchableOpacity>               
             );
         }      
     
@@ -198,9 +204,9 @@ export const CalendarScreen=()=>{
     }  
     
     /* function which gets it parameters from the UpdateExModal -view and calls updaExById -function if there is something to update */
-    const updateExToDb=async(id, reps, sets, date)=>{
+    const updateExToDb=async(id, reps, sets, date, rating)=>{
         if(updateId!=-1){       
-          await updateExById(id, reps, sets);
+          await updateExById(id, reps, sets, rating);
           setUpdateId(-1);
         }
         else{
@@ -236,8 +242,62 @@ export const CalendarScreen=()=>{
             {title}
         </Text>
         </TouchableOpacity>
-        ) 
-    
+        )
+      
+    /* function returns as many star-icons as is defined in the count-variable */
+    const RatingStars = ({count, size})=>{
+        if(!count){
+            return(
+                <Text></Text>
+            );
+        }
+        else if(count===1){
+            return(
+                <View style={styles.starRow}>
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star}/>
+                </View>
+            );
+        }
+        else if(count===2){
+            return(                    
+                <View style={styles.starRow}>
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                </View>                    
+            );
+        }
+        else if(count===3){
+            return(                    
+                <View style={styles.starRow}>
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                </View>                    
+            );
+        }
+        else if(count===4){
+            return(                    
+                <View style={styles.starRow}>
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                </View>                    
+            );
+        }
+        else if(count===5){
+            return(                    
+                <View style={styles.starRow}>
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                <Avatar.Icon size={size} icon="star" color="gold" style={styles.star} />
+                </View>
+            );
+        }        
+    }
+
     return (       
         <ImageBackground source={require('../../assets/images/background.jpg')}
             style={styles.imageBackground} resizeMode='cover'>
@@ -246,6 +306,7 @@ export const CalendarScreen=()=>{
                 updateEx={updateExToDb} 
                 exToUpdate={exToUpdate} 
                 closeModal={closeEditModal}
+                renderStars={RatingStars}
             />
             <AddExModal 
                 visibility={visibility2} 
@@ -383,6 +444,7 @@ export const CalendarScreen=()=>{
       }
 };
 
+
   const styles = StyleSheet.create({    
     spinner:{
         position: "absolute",
@@ -399,10 +461,11 @@ export const CalendarScreen=()=>{
     },    
     listStyle:{
         flex: 1,
-        width: '93%',
+        width: '98%',
         alignSelf: 'center',        
         marginVertical: 10,
-        padding: 10,        
+        paddingVertical: 5,
+        paddingHorizontal: 1,        
         borderRadius: 8,
         borderColor: 'ivory',
         borderWidth: 2,
@@ -427,18 +490,31 @@ export const CalendarScreen=()=>{
         fontSize: 18,
         color: 'ivory',
     },
-    listItemStyle:{
-        width:'100%',
-        alignSelf: 'center',      
-        padding:3,
-        backgroundColor: "crimson",
-        margin: 2,
+    itemRow:{
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: "navy",
+        marginVertical: 2,
+        marginHorizontal: 3,
+        padding: 3,
         borderRadius: 5,
         borderWidth: 1,
         borderColor: 'ivory',
-        color: 'ivory',
+        alignItems: 'center',
+    },
+    listItemStyle:{      
         fontWeight: 'bold',
         fontSize: 14,
+        color: 'ivory',
+    },
+    starRow:{
+        flex: 3,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',         
+    },
+    star:{
+        backgroundColor: 'transparent', 
+        margin: -5,     
     },
     formStyle:{
         display: 'flex',
