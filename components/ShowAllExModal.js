@@ -6,6 +6,7 @@ const ShowAllExModal = (props) => {
 
     const [isScrollEnabled, setIsScrollEnabled] = useState(true);
 
+    // Alert-pop up to confirm a deletion of a single exercise from the database
     const alertUser = (name, id, index)=>{
         Alert.alert(
           "Seuraava harjoitus poistetaan tietokannasta: "+name ,//title - put at least this - the rest is up to you
@@ -22,16 +23,15 @@ const ShowAllExModal = (props) => {
           );
       }
 
-
+      // a function to remove a certain exercise from the database
       async function removeEx(id) {
         try{
             await removeExById(id);
-            
-            
         }
         catch (err) {
             console.log('Error: '+err);
         }
+        props.readAllEx();
     }
 
     const renderItem=()=>{
@@ -47,15 +47,15 @@ const ShowAllExModal = (props) => {
                             
                         {props.exListAll.map((item, index)=>{
                                     return <TouchableOpacity onLongPress={()=>alertUser(item.name, item.id, index)} >
-                                        <View style={styles.renderStyle} key={index}>  
-                                            <Text style={styles.listStyle}>{index+1}. {item.name} / {item.id}</Text>
+                                        <View style={styles.renderStyle} >  
+                                            <Text style={styles.listStyle} key={index}>{index+1}. {item.name}</Text>
                                         </View>
                                         </TouchableOpacity>    
                                 })}
                         </View>
                         </ScrollView>
                     
-                    <Button style={styles.buttonStyle} title="Palaa Takaisin" onPress={props.closeModal} />
+                    <Button style={styles.buttonStyle} color='#a4161a' title="Palaa Takaisin" onPress={props.closeModal} />
                 </View>
     );}
 
@@ -65,25 +65,7 @@ const ShowAllExModal = (props) => {
             <ImageBackground source={require('../assets/images/ExListModal.jpg')} style={styles.imageBackground} resizeMode='cover'>
                
                {renderItem()}
-               {/*} <View style={styles.container}>
-                    <View style={styles.textStyle}>
-                    <Text >Tallennetut Harjoitukset</Text>
-                    </View>
-                        <ScrollView>
-                        <View>
-                            
-                        {props.exListAll.map((item, index)=>{
-                                    return <TouchableOpacity onLongPress={()=>alertUser(item.name, item.id, index)} >
-                                        <View style={styles.renderStyle} key={index}>  
-                                            <Text style={styles.listStyle}>{index+1}. {item.name} / {item.id}</Text>
-                                        </View>
-                                        </TouchableOpacity>    
-                                })}
-                        </View>
-                        </ScrollView>
-                    
-                    <Button style={styles.buttonStyle} title="Palaa Takaisin" onPress={props.closeModal} />
-                            </View>*/}
+            
             </ImageBackground> 
         </Modal>
     );
@@ -109,6 +91,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 1,
         marginBottom:10,
+        
     },
     imageBackground:{
         flex:1,
@@ -130,7 +113,7 @@ const styles = StyleSheet.create({
     },
     listStyle: {
         backgroundColor: '#b1a7a6',
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: '#660708',
         borderRadius: 7,
         elevation: 10,
