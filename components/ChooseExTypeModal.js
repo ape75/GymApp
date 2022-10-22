@@ -42,10 +42,10 @@ const ChooseExTypeModal = (props) => {
   );
 
   /**This maps exercises into list items*/
-  const renderItem=({item, index})=>{
+  const renderItem=({item, id})=>{
       return (
-          <TouchableOpacity onPress={()=>props.workoutType(item.name,index)} style={styles.itemStyle} activeOpacity={0.8}>
-          <Text key={index} style={styles.exStyle}>{item.name}</Text>
+          <TouchableOpacity onPress={()=>props.workoutType(item.name,item.id)} style={styles.itemStyle} activeOpacity={0.8}>
+          <Text key={item.id} style={styles.exStyle}>{item.name}</Text>
           </TouchableOpacity>
       );
   };
