@@ -15,5 +15,6 @@ In order to run this app you need to make the following installations:
 11. npm install react-native-linear-gradient --save
 12. npm install --save react-native-calendars
 13. npm install --save react-native-indicators
+14. npm install react-native-element-dropdown --save
 
 Moro!!!
