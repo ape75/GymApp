@@ -1,9 +1,9 @@
 import {useIsFocused} from '@react-navigation/native';
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, TextInput, TouchableOpacity, View, Text, ImageBackground, Alert} from 'react-native';
+import {StyleSheet, TextInput, TouchableOpacity, View, Text, ImageBackground, Alert, FlatList} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ChooseExTypeModal from '../../components/ChooseExTypeModal';
-import {addNewDoneEx} from '../../database/db';
+import {addNewDoneEx, fetchExByDay} from '../../database/db';
 
 
 export const HomeScreen=()=>{
@@ -13,15 +13,17 @@ export const HomeScreen=()=>{
   const [reps, setReps]=useState();
   const [sets, setSets]=useState();
   const [currentDate, setCurrentDate] = useState('');
+  const [exList, setExList]=useState([]);
 
   const [showAddingBox, setAddingVisible]=useState(false);
   const [modalVisible, setModalVisible]=useState(false);
   const isFocused = useIsFocused();
 
-  /*when page comes to focus, call function to get todays date*/
+  /*when page comes to focus, call function to get todays date and todays exercises*/
   useEffect(() => {
     if (isFocused){
       {getToday()};
+      {getTodaysEx(currentDate)};
     }
   }, [isFocused]);
   
@@ -91,8 +93,49 @@ export const HomeScreen=()=>{
     );
   };
 
-  /*TODO jostain syystä tämä poistaa aina listan viimeisen formin, korjaa*/
-  const handleWorkoutRemove = () => {
+  /*Start copied from calendar.js 
+  Made by Ari with some minor changes by Arsi*/
+  async function getTodaysEx(currentDate){
+    try{
+      const dbResult = await fetchExByDay(currentDate);               
+      setExList(dbResult);
+    }catch(err){
+      console.log(err);
+      Alert.alert(
+        'Virhe',
+        'Päivää hakiessa tapahtui virhe',
+        [{text:'OK', style:'destructive'}],
+        {cancelable: false},
+      );
+    };
+  };
+
+  const renderItem=({item, index})=>{
+    return (                
+      <TouchableOpacity style={styles.exListItemRowStyle}>
+        <Text style={styles.exListItemStyle} key={index}>{index+1}. {item.name} Toistot:{item.reps} / Setit:{item.sets} / Arviointi:{item.rating}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const RenderList=()=>{      
+    return(
+      <LinearGradient 
+          start={{x: 1, y: 1}} end={{x: 0, y: 0}} 
+          colors={['#65FDF0','#1D6FA3','#91b6d4']} 
+          style={styles.exListStyle}>
+        <Text style={styles.exListHeading}>Harjoitukset Tänään</Text>
+        <FlatList
+          data={exList}
+          renderItem={renderItem}
+        />
+      </LinearGradient>
+    );
+  };
+  /*End copied from calendar.js*/
+
+  /*This clears all form inputs*/
+  const clearForm = () => {
     setWorkout('');
     setWID(null);
     setReps('');
@@ -106,13 +149,13 @@ export const HomeScreen=()=>{
     setModalVisible(false);
   };
 
-  /*TODO letter removal doesn't work*/
+  /*This clears non number characters from reps input*/
   const repsInputHandler = (val) => {
     let numeric = val.replace(/[^0-9]/g, '');
     setReps(numeric);
   };
 
-  //TODO letter removal doesn't work
+  /*This clears non number characters from sets input*/
   const setsInputHandler = (val) => {
     let numeric = val.replace(/[^0-9]/g, '');
     setSets(numeric);
@@ -130,7 +173,7 @@ export const HomeScreen=()=>{
     <TouchableOpacity 
         activeOpacity={0.8}
         onPress={onPress}
-        style={[styles.appButtonContainer, backgroundColor && {backgroundColor}]}>           
+        style={[styles.appButtonContainer, backgroundColor && {backgroundColor}]}>
       <Text style={styles.appButtonText}>{title}</Text>
     </TouchableOpacity>
   );
@@ -138,18 +181,19 @@ export const HomeScreen=()=>{
   return (
     <ImageBackground source={require('../../assets/images/background.jpg')} style={styles.imageBackground} resizeMode='cover'>
         <ChooseExTypeModal visibility={modalVisible} workoutType={workoutInputHandler} closeModal={hideChooseExModal}/>
-        <View style={styles.scrollviewstyle}>
+        <View style={styles.formStyle}>
             <View style={styles.todaysworkout}>
             <Text>Tämän päivän treeni</Text>
             <TextInput style={styles.textinput} value={workout} onFocus={chooseExModal} placeholder="Harjoitus" />
             <TextInput keyboardType='numeric' style={styles.textinput} value={reps} onChangeText={repsInputHandler} placeholder="Toistot" />
             <TextInput keyboardType='numeric' style={styles.textinput} value={sets} onChangeText={setsInputHandler} placeholder="Setit" />
               <View style={styles.inputstyle}>
-                  <AppButton title="Peruuta" onPress={handleWorkoutRemove}/>
+                  <AppButton title="Peruuta" onPress={clearForm}/>
                   <AppButton title="Tallenna" onPress={inputCheck} backgroundColor="limegreen"/>
               </View>
             </View>
         </View>
+        <RenderList/>
       {showAddingBox ? <RenderAdding/> : null}
     </ImageBackground>
   );
@@ -161,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 3,
     alignItems: 'center',
   },
-  scrollviewstyle:{
+  formStyle:{
     alignItems:'center',
     width:'90%',
   }, 
@@ -211,5 +255,42 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'ivory',
     padding: 30,
+},
+/*list formatting copied from calendar.js*/
+exListStyle:{
+  flex: 1,
+  width: '98%',
+  alignSelf: 'center',        
+  marginVertical: 10,
+  paddingVertical: 5,
+  paddingHorizontal: 1,        
+  borderRadius: 8,
+  borderColor: 'ivory',
+  borderWidth: 2,
+  elevation: 10,
+},
+exListHeading:{
+  alignSelf: 'center',
+  marginBottom: 5,
+  fontWeight: 'bold',
+  fontSize: 18,
+  color: 'ivory',
+},
+exListItemRowStyle:{
+  flex: 1,
+  flexDirection: 'row',
+  backgroundColor: "navy",
+  marginVertical: 2,
+  marginHorizontal: 3,
+  padding: 3,
+  borderRadius: 5,
+  borderWidth: 1,
+  borderColor: 'ivory',
+  alignItems: 'center',
+},
+exListItemStyle:{      
+  fontWeight: 'bold',
+  fontSize: 14,
+  color: 'ivory',
 },
 });
