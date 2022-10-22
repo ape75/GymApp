@@ -275,6 +275,23 @@ export const addNewEx=(newEx, newExGroup)=>{
     return promise;
 };
 
+export const removeExById=(id)=>{
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('delete from '+tableName+' where id=?;',
+            [id],
+            ()=>{
+                    resolve();
+            },
+            (_,err)=>{
+                reject(err);
+            }
+            );
+        });
+    });
+    return promise;
+};
+
 /*this function is called from homescreen when user wants to 
 add their new finished exercise to the done exercise list*/
 export const addNewDoneEx=(workoutID, reps, sets, currentDate)=>{

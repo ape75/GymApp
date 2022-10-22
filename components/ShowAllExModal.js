@@ -1,16 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground, FlatList, TouchableOpacity, Modal } from 'react-native';
-import {updateExById, fetchExerciseTypes } from '../../database/db';
+import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground, FlatList, TouchableOpacity, Modal, Alert } from 'react-native';
+import {updateExById, fetchExerciseTypes, removeExById } from '../database/db';
 
 const ShowAllExModal = (props) => {
 
     const [isScrollEnabled, setIsScrollEnabled] = useState(true);
 
-    return(
-        
-        <Modal visible={props.visibility}>
-            <ImageBackground source={require('../assets/images/ExListModal.jpg')} style={styles.imageBackground} resizeMode='cover'>
-                <View style={styles.container}>
+    const alertUser = (name, id, index)=>{
+        Alert.alert(
+          "Seuraava harjoitus poistetaan tietokannasta: "+name ,//title - put at least this - the rest is up to you
+          'Oletko varma?',//Extra message
+          //There can be several buttons
+          //Buttons: button text, style(cancel, default or destructive), and what happens when pressed
+          // onPress:()=>removeExById(id)} ALEMPI TOIMII TÄLLÄ
+          [{text:'Kyllä', style:'destructive', onPress:()=>removeEx(id)},
+          //The second button
+          {text:'Peruuta', style:'default',}],
+          {
+            cancelable: true
+          }
+          );
+      }
+
+
+      async function removeEx(id) {
+        try{
+            await removeExById(id);
+            
+            
+        }
+        catch (err) {
+            console.log('Error: '+err);
+        }
+    }
+
+    const renderItem=()=>{
+
+    
+    return (
+        <View style={styles.container}>
                     <View style={styles.textStyle}>
                     <Text >Tallennetut Harjoitukset</Text>
                     </View>
@@ -18,9 +46,9 @@ const ShowAllExModal = (props) => {
                         <View>
                             
                         {props.exListAll.map((item, index)=>{
-                                    return <TouchableOpacity>
+                                    return <TouchableOpacity onLongPress={()=>alertUser(item.name, item.id, index)} >
                                         <View style={styles.renderStyle} key={index}>  
-                                            <Text style={styles.listStyle}>{index+1}. {item.name} </Text>
+                                            <Text style={styles.listStyle}>{index+1}. {item.name} / {item.id}</Text>
                                         </View>
                                         </TouchableOpacity>    
                                 })}
@@ -29,6 +57,33 @@ const ShowAllExModal = (props) => {
                     
                     <Button style={styles.buttonStyle} title="Palaa Takaisin" onPress={props.closeModal} />
                 </View>
+    );}
+
+    return(
+        
+        <Modal visible={props.visibility}>
+            <ImageBackground source={require('../assets/images/ExListModal.jpg')} style={styles.imageBackground} resizeMode='cover'>
+               
+               {renderItem()}
+               {/*} <View style={styles.container}>
+                    <View style={styles.textStyle}>
+                    <Text >Tallennetut Harjoitukset</Text>
+                    </View>
+                        <ScrollView>
+                        <View>
+                            
+                        {props.exListAll.map((item, index)=>{
+                                    return <TouchableOpacity onLongPress={()=>alertUser(item.name, item.id, index)} >
+                                        <View style={styles.renderStyle} key={index}>  
+                                            <Text style={styles.listStyle}>{index+1}. {item.name} / {item.id}</Text>
+                                        </View>
+                                        </TouchableOpacity>    
+                                })}
+                        </View>
+                        </ScrollView>
+                    
+                    <Button style={styles.buttonStyle} title="Palaa Takaisin" onPress={props.closeModal} />
+                            </View>*/}
             </ImageBackground> 
         </Modal>
     );
