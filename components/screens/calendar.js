@@ -56,7 +56,7 @@ export const CalendarScreen=()=>{
 
     let exDaysObject = {};    
 
-    /* these functions are executed every time screen is loaded or screen gets focused again  */
+    /* these are executed every time screen is loaded or screen gets focused again  */
     useEffect(() => {
         if (isFocused) {         
             setExList([]);           
@@ -67,7 +67,7 @@ export const CalendarScreen=()=>{
         }
       }, [isFocused]);
       
-    /* this funktion sets the selected/marked values to the calendar data-object. First it reads the marked dates from the database
+    /* function sets the selected/marked values to the calendar data-object. First it reads the marked dates from the database
     and after that it sets the correct values to the selected date given as an input parameter
     finally it sets the day and exercise days -object as a value to state variables  */
     const setMarkers=async(date) =>{
@@ -122,7 +122,7 @@ export const CalendarScreen=()=>{
         }      
     
        /*  component which returns a view with a FlatList of items if the exList contains any values (length is not 0)
-        if the exList is empty and a search has been committed (textDate has been set), function returns a notification of no markings  */
+        if the exList is empty and a the value or renderEmpty parameter equals true , function returns a notification of no markings  */
         const RenderList=()=>{
             if(exList.length != 0){        
                 return(
@@ -167,7 +167,7 @@ export const CalendarScreen=()=>{
         );
     }
 
-    /* this function implemets an Alert-window to confirm the deletion of an exercise */
+    /* this function implements an Alert-window to confirm the deletion of an exercise */
     const confirmation = (name, id, index)=>{
         Alert.alert(
           "Harjoitus nro " +(index+1) +" (" +name+ ")" +" poistetaan!",//title - put at least this - the rest is up to you
@@ -217,7 +217,7 @@ export const CalendarScreen=()=>{
       }
       
       /* function gets the index of the specific item as a parameter from the onPress-attribute of TouchableOpacity in renderItem -function
-      then it sets the desired index- and item -values to state Variables and opens the EditModal View */
+      then it sets the desired index- and item -values to state Variables and opens the editing Modal View */
       const updateEx=(index)=>{
         setUpdateId(index);
         setExToUpdate(exList[index]);
@@ -232,15 +232,16 @@ export const CalendarScreen=()=>{
             style={[
                 styles.appButtonContainer,        
                 backgroundColor && { backgroundColor }        
-            ]}>           
-        <Avatar.Icon 
-            size={32} 
-            icon={iconName}
-            style={{backgroundColor:'transparent', fontWeight:'bold'}} 
-        />
-        <Text style={[styles.appButtonText, { color:fontColor }]}>
-            {title}
-        </Text>
+            ]}
+        >           
+            <Avatar.Icon 
+                size={32} 
+                icon={iconName}
+                style={{backgroundColor:'transparent', fontWeight:'bold'}} 
+            />
+            <Text style={[styles.appButtonText, { color:fontColor }]}>
+                {title}
+            </Text>
         </TouchableOpacity>
         )
       
@@ -298,6 +299,10 @@ export const CalendarScreen=()=>{
         }        
     }
 
+    /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    CALENDAR.JS RETURN-STATEMENT STARTS HERE
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
     return (       
         <ImageBackground source={require('../../assets/images/background.jpg')}
             style={styles.imageBackground} resizeMode='cover'>
@@ -385,10 +390,10 @@ export const CalendarScreen=()=>{
         </ImageBackground>         
     );        
 
-    /* this function calls the fetchExByDay -function from db.js and sets the return value to the ExList -state variable
+    /* function calls the fetchExByDay -function from db.js and sets the return value to the ExList -state variable
     it also sets the isFetching state variable to "true" or "false" depending on the fetching -parameter given
     if it is set to true, then while the data is fetched from the database and an indicator is rendered to the screen
-    when isFetching is set to false, only results are rendered */
+    when isFetching is set to false, only results are rendered afterwards*/
     async function readAllExDoneByDay(date, fetching){
         try{                           
             setIsFetching(fetching);                             
@@ -426,7 +431,9 @@ export const CalendarScreen=()=>{
         return result;    
     }
     
-   /*  this function calls deleteEx -function from db.js which deletes the item with the specific id from the database */
+   /* function calls deleteEx -function from db.js which deletes the item with the specific id from the database
+   after the deleting is done exercise are read again to refresh the list in the view bu calling the readAllExDoneByDay -funtion
+   if there are no exercises left, markers are refreshed for the selected day */
     async function deleteExFromDb(id){   
         try{          
             await deleteEx(id);
