@@ -54,7 +54,7 @@ const cancelAdd=()=>{
     props.closeModal();
 } 
 
-/* this function checks if the input values are empty or zero */
+/* function checks if the input values are empty or zero */
 const checkInput=()=>{
     if(exReps && exSets && exTypeName && exReps != 0 && exSets != 0){
         confirmation();
@@ -84,7 +84,7 @@ const AppButton = ({ onPress, title, backgroundColor, fontColor, iconName }) => 
     </TouchableOpacity>
     )
 
-    /* function opens an Alert -window which asks a confirmation from the user */
+    /* function opens an Alert -window which asks a confirmation of adding an exercise from the user */
     const confirmation = ()=>{
         Alert.alert(
           "Lisätäänkö harjoitus tietokantaan?", "(" +exTypeName +")",         
@@ -99,7 +99,7 @@ const AppButton = ({ onPress, title, backgroundColor, fontColor, iconName }) => 
           );
       }
 
-    /* function opens an Alert -window which asks a confirmation from the user */
+    /* function opens an Alert -window which alerts the user that the given values can not be zero or empty */
     const alertEmpty = ()=>{
         Alert.alert(
           "Annettu arvo ei voi olla tyhjä tai 0!",
@@ -111,6 +111,11 @@ const AppButton = ({ onPress, title, backgroundColor, fontColor, iconName }) => 
           );
       }
 
+ /*
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        MAIN RETURN -STATEMENT STARTS HERE
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+*/
 return(
     <Modal visible={props.visibility} animationType="slide"> 
         <ImageBackground source={require('../assets/images/background.jpg')}
@@ -288,7 +293,9 @@ return(
     </Modal>
 );
 
- /* this function calls addDoneExInDay -function from db.js which adds the new exercise with the specific values to the database */
+ /* function calls addDoneExInDay -function from db.js which adds the new exercise with the specific values to the database. 
+  After adding is done it calls functions defined in the properties to read days exercises again to refresh the list in the view
+  it also refreshes the markers to the calendar */
  async function addExToDb(typeid, exReps, exSets, exDate, exRating){
     console.log(typeid); 
     try{          
@@ -304,7 +311,8 @@ return(
     cancelAdd();
   }
 
-  /* this function reads all the exercise types from the database and adds the names and id's of returned items to an array  */
+  /* function reads all the exercise types from the database and adds the names and id's of returned items to an array 
+   This array is used in the drop-down list -component */
   async function readAllExTypes(){
     let exTypesArray = [];
     try{                                     
