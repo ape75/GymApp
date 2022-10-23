@@ -264,14 +264,31 @@ export const addNewEx=(newEx, newExGroup)=>{
     return promise;
 };
 
-/*this function is called from homescreen when user wants to 
-add their new finished exercise to the done exercise list*/
-export const addNewDoneEx=(workoutID, reps, sets, currentDate)=>{
+export const removeExById=(id)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
-            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid) values(?,?,?,?);',
+            tx.executeSql('delete from '+tableName+' where id=?;',
+            [id],
+            ()=>{
+                    resolve();
+            },
+            (_,err)=>{
+                reject(err);
+            }
+            );
+        });
+    });
+    return promise;
+};
+
+/*this function is called from homescreen when user wants to 
+add their new finished exercise to the done exercise list*/
+export const addNewDoneEx=(workoutID, reps, sets, currentDate, rating)=>{
+    const promise=new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid, rating) values(?,?,?,?,?);',
             //And the values come here
-                [currentDate, reps, sets, workoutID],
+                [currentDate, reps, sets, workoutID, rating],
                 ()=>{
                     resolve();
                 },

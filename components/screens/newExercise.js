@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import {StyleSheet, TextInput, Button, ScrollView, View, Text, ImageBackground, FlatList, TouchableOpacity, Modal } from 'react-native';
-import {fetchExByDay, updateExById, addNewEx, fetchExerciseTypes, updateEx} from '../../database/db';
+import {StyleSheet, TextInput, Button,View, Text, ImageBackground,TouchableOpacity,} from 'react-native';
+import {addNewEx, fetchExerciseTypes} from '../../database/db';
 import ShowAllExModal from '../ShowAllExModal';
 
 
@@ -22,11 +22,6 @@ export const NewExercise=()=>{
         console.log(newExGroup);
       }
 
-    const workoutInputHandler=({newEx, newExGroup})=>{
-        console.log(newEx);
-        console.log(newExGroup);
-        addNewEx(newEx, newExGroup);
-    }
 
     async function readAllEx() {
         try{
@@ -69,29 +64,24 @@ export const NewExercise=()=>{
 return (
 
     <ImageBackground source={require('../../assets/images/salikuva.jpg')} style={styles.imageBackground} resizeMode='cover'>
-    <View style={styles.container}>
-        <View style={styles.upper}>
-
-        </View>
-            <View style={styles.newWindow}>
-                <View >
-                    <Text>Lisää uusi harjoitus</Text>   
+        <View style={styles.container}>
+        
+                <View style={styles.newWindow}>
+                  
+                    <TextInput style={styles.inputStyle} placeholder="Anna harjoituksen nimi..." 
+                        onChangeText={newExHandler}/>
+                        <TextInput style={styles.inputStyle} placeholder="Anna lihasryhmä..." 
+                        onChangeText={newExGroupHandler}/>
+                    <View style={{marginBottom: 10}}>
+                        <Button  color='#a4161a' title='Lisää' onPress={()=>addNewEx(newEx, newExGroup)} 
+                        />
+                    </View>
+                    <View>
+                        <Button p='2' color='#a4161a' title="Näytä kaikki" onPress={()=>readAllEx()} />
+                    </View>
+                    <ShowAllExModal visibility={visibility} renderItem={renderItem} closeModal={closeModal} exListAll={exListAll} readAllEx={readAllEx}/>
                 </View>
-                <TextInput style={styles.inputStyle} placeholder="Anna harjoituksen nimi..." 
-                    onChangeText={newExHandler}/>
-                    <TextInput style={styles.inputStyle} placeholder="Anna lihasryhmä..." 
-                    onChangeText={newExGroupHandler}/>
-                <Button color='#a4161a' title='Lisää!' onPress={()=>addNewEx(newEx, newExGroup)} 
-                />
-            
-                <Button p='2' color='#a4161a' title="Näytä kaikki" onPress={()=>readAllEx()} />
-
-                <ShowAllExModal visibility={visibility} renderItem={renderItem} closeModal={closeModal} exListAll={exListAll}/>
-              
-            </View>
-       
-  
-    </View>
+        </View>
     </ImageBackground>  
     
     );
@@ -101,8 +91,9 @@ const styles = StyleSheet.create({
     container: {
     
       },
-    textView: {
-        
+      textHeader: {
+        alignItems: 'center',
+        marginBottom:10,
     },
     textStyle:{
         color: 'black',
@@ -129,7 +120,7 @@ const styles = StyleSheet.create({
     inputStyle: {
         backgroundColor: '#d3d3d3',
         borderColor: '#660708',
-        borderWidth: 3,
+        borderWidth: 2,
         borderRadius: 7,
         marginBottom:10,
     },
