@@ -266,12 +266,12 @@ export const addNewEx=(newEx, newExGroup)=>{
 
 /*this function is called from homescreen when user wants to 
 add their new finished exercise to the done exercise list*/
-export const addNewDoneEx=(workoutID, reps, sets, currentDate)=>{
+export const addNewDoneEx=(workoutID, reps, sets, currentDate, rating)=>{
     const promise=new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
-            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid) values(?,?,?,?);',
+            tx.executeSql('insert into '+tableName2+' (date, reps, sets, typeid, rating) values(?,?,?,?,?);',
             //And the values come here
-                [currentDate, reps, sets, workoutID],
+                [currentDate, reps, sets, workoutID, rating],
                 ()=>{
                     resolve();
                 },
