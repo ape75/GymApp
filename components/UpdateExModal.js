@@ -29,7 +29,7 @@ const UpdateExModal = (props) => {
         setRadioValue(exStars);
       }, [exStars])
 
-    /* this function handles the change in sets -input and removes every character that is not a number */
+    /* function handles the change in sets -input and removes every character that is not a number */
     const setsInputHandler=(enteredText)=>{
         let numeric = enteredText.replace(/[^0-9]/g, '');
         setExSets(numeric);    
@@ -40,12 +40,12 @@ const UpdateExModal = (props) => {
         setExReps(numeric);    
     }
 
-   /*  this function calls an update -function from the calendar.js which is defined in the modal properties */
+   /* function calls an update -function from the calendar.js which is defined in the modal properties */
     const updateEx=()=>{        
             props.updateEx(exId, exReps, exSets, exDate, exStars);             
     }
     
-    /* if the update is canceled, reps and sets are set empty and the modal view is closed */
+    /* if the update is canceled, reps, sets and rating are set to their initial values and the modal view is closed */
     const cancelUpdate=()=>{ 
         setExReps(props.exToUpdate.reps.toString());
         setExSets(props.exToUpdate.sets.toString());
@@ -66,7 +66,7 @@ const UpdateExModal = (props) => {
         }
     }
     
-    /* this function checks if the input values are empty or zero */
+    /* function checks if the input values are empty or zero */
     const checkInput=()=>{
         if(exReps && exSets && exReps != 0 && exSets != 0){
             confirmation();
@@ -76,7 +76,7 @@ const UpdateExModal = (props) => {
         }
     }
     
-    /* function opens an Alert -window which asks a confirmation from the user */
+    /* function opens an Alert -window which asks a confirmation of updating the exercise from the user */
     const confirmation = ()=>{
         Alert.alert(
           "Päivitetään harjoituksen tiedot.",
@@ -89,7 +89,7 @@ const UpdateExModal = (props) => {
           );
       }
 
-    /* function opens an Alert -window which asks a confirmation from the user */
+    /* function opens an Alert -window which alerts the user that the given values can not be zero or empty */
     const alertEmpty = ()=>{
         Alert.alert(
           "Annettu arvo ei voi olla 0 tai tyhjä!",
@@ -155,6 +155,11 @@ const UpdateExModal = (props) => {
         );
       }
 
+    /*
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        MAIN RETURN -STATEMENT STARTS HERE
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    */
     return(
         <Modal visible={props.visibility} animationType="slide"> 
             <ImageBackground source={require('../assets/images/background.jpg')}
@@ -165,8 +170,9 @@ const UpdateExModal = (props) => {
                     style={styles.container}
                 >
                     <Surface style={styles.surface} elevation={5}>
-                        <Text style={styles.heading}>{exDate}</Text>
-                        <Text style={styles.heading}>{exName}</Text>
+                    <Text style={styles.heading}>Treenin päivitys</Text>
+                        <Text style={styles.heading2}>{exDate}</Text>
+                        <Text style={styles.heading2}>{exName}</Text>
                     </Surface>                      
                     <View style={styles.formstyle}>
                         <View style={styles.textinputBackground}>
@@ -280,7 +286,7 @@ const UpdateExModal = (props) => {
                         <AppButton 
                             title="päivitä" 
                             onPress={checkInput} 
-                            backgroundColor="green" 
+                            backgroundColor="#0066ff" 
                             fontColor="ivory" 
                             iconName="update"
                         />
@@ -318,7 +324,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container:{      
-        margin:10,
+        marginHorizontal: 10,
+        marginVertical: 10,
         backgroundColor: '#f0f0f5',
         borderColor: 'black',
         borderWidth: 1,
@@ -328,8 +335,19 @@ const styles = StyleSheet.create({
     },
     heading:{
         alignSelf: 'center',
-        color: 'ivory',
+        color: 'black',
         fontSize: 20,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        marginBottom: 5,
+        backgroundColor: '#edf3f8',
+        padding: 5,
+        borderRadius: 8,
+    },
+    heading2:{
+        alignSelf: 'center',
+        color: 'ivory',
+        fontSize: 16,
         fontWeight: 'bold',
         textTransform: 'uppercase',
     },
@@ -388,7 +406,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignSelf: 'center',
         justifyContent: 'space-around',
-        marginBottom: 20,
+        marginBottom: 10,
         marginTop: 20,
         paddingLeft: 10,
         paddingRight: 10,
@@ -430,7 +448,8 @@ const styles = StyleSheet.create({
     },      
     linearGradient: {       
         flex: 1, 
-        marginVertical: 10,   
+        marginBottom: 10,
+        marginTop: 5,   
         alignItems: 'center',      
         paddingHorizontal: 20,
         borderRadius: 8,
@@ -451,7 +470,7 @@ const styles = StyleSheet.create({
         paddingVertical: 2,
         paddingHorizontal: 4,
         marginBottom: 5,
-        backgroundColor: 'green',
+        backgroundColor: 'navy',
         borderWidth: 1,
         borderColor: 'ivory',
         borderRadius: 5,
