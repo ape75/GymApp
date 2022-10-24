@@ -48,7 +48,9 @@ const ShowAllExModal = (props) => {
                         {props.exListAll.map((item, index)=>{
                                     return <TouchableOpacity key={index} onLongPress={()=>alertUser(item.name, item.id, index)} >
                                         <View style={styles.renderStyle} >  
-                                            <Text style={styles.listStyle} >{index+1}. {item.name}</Text>
+
+                                            <Text style={styles.listStyle}>{index+1}. {item.name}</Text>
+
                                         </View>
                                         </TouchableOpacity>    
                                 })}

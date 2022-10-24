@@ -43,7 +43,7 @@ export const init=()=>{
             ]);
             
             tx.executeSql('create table if not exists '+tableName2+
-            '(id integer not null primary key, date text not null, reps integer not null, sets integer not null, typeid integer not null, rating integer, FOREIGN KEY(typeid) REFERENCES extypes(id));',
+            '(id integer not null primary key, date text not null, reps integer not null, sets integer not null, typeid integer not null, rating integer, FOREIGN KEY(typeid) REFERENCES extypes(id) ON DELETE CASCADE);',
             [],
             ()=>{
                 resolve();
