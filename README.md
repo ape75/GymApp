@@ -46,6 +46,11 @@ The **TOP5** exercises with the most repetitions are also visible.
 
 ![Screenshot3](https://user-images.githubusercontent.com/102353086/217552726-bed17825-47e1-4f33-88fd-2b39d232cbec.png)
 
+### **Adding an excercise**
+User can select an excercise from the dropdown list<br/>
+with a number of sets and repetitions and an optional rating from 1 to 5.
+
+![Screenshot4](https://user-images.githubusercontent.com/102353086/217604031-650bfa1d-d4a4-4082-a721-54420111f325.png)
 
 
 
