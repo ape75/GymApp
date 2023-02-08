@@ -2,7 +2,8 @@
 ## &copy; 2022 Ari-Jussi Ahonen, Arsi Arola and Oskari Ahoniemi
 **Gymapp** is a mobile application for keeping track of your gym excercises and done sets and repetitions.
 
-This application is developed using the **React Native Framework**.
+This application is developed using the **React Native Framework**.<br/>
+**SQLite** database is used to store the data in the local device memory. 
 
 With this application the user can:
 - **add, delete, and update** their excercises on a desired date picked from a calendar
