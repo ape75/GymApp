@@ -36,7 +36,7 @@ npm install react-native-element-dropdown --save
 
 ### **Calendar view**
 The calendar shows markers on the dates that have added excercises. <br /> 
-Excercises done are show on a list with sets, repetitions and the possible rating.
+Done excercises are show on a list with sets, repetitions and the optional rating.
 
 ![Screenshot2](https://user-images.githubusercontent.com/102353086/217549421-eebcaa35-ff54-4ca5-9597-5f303c622d4e.png)
 
